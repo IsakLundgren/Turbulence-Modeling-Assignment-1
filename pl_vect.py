@@ -10,7 +10,7 @@ plt.interactive(True)
 
 plt.close('all')
 
-x=100000
+x=10
 
 # read data file
 tec=np.genfromtxt("tec.dat", dtype=None,comments="%")
