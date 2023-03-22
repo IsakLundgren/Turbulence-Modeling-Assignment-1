@@ -169,18 +169,42 @@ eps2d[:,-1]=eps2d[:,-2]
 u2d_face_w,u2d_face_s=compute_face_phi(u2d,fx,fy,ni,nj)
 v2d_face_w,v2d_face_s=compute_face_phi(v2d,fx,fy,ni,nj)
 p2d_face_w,p2d_face_s=compute_face_phi(p2d,fx,fy,ni,nj)
+uv2d_face_w,uv2d_face_s=compute_face_phi(uv2d,fx,fy,ni,nj) # reynolds components
 
 # x derivatives
 dudx=dphidx(u2d_face_w,u2d_face_s,areawx,areasx,vol)
 dvdx=dphidx(v2d_face_w,v2d_face_s,areawx,areasx,vol)
 dpdx=dphidx(p2d_face_w,p2d_face_s,areawx,areasx,vol)
+duvdx = dphidx(uv2d_face_w,uv2d_face_s,areawx,areasx,vol) # reynolds stressesx-dir
 
-# x derivatives
+# y derivatives
 dudy=dphidx(u2d_face_w,u2d_face_s,areawy,areasy,vol)
 dvdy=dphidx(v2d_face_w,v2d_face_s,areawy,areasy,vol)
 dpdy=dphidx(p2d_face_w,p2d_face_s,areawy,areasy,vol)
+duvdy = dphidx(uv2d_face_w,uv2d_face_s,areawy,areasy,vol) # reynolds stresses y-dir
+
 
 omega2d=eps2d/k2d/0.09
+
+
+################################ mesh plot
+
+fig = plt.figure()
+for i in range(0, ni-1):
+    plt.plot(x2d[i,:], y2d[i,:], 'k',linewidth=0.5)
+    
+    
+for j in range(0, nj-1):
+    plt.plot(x2d[:,j], y2d[:,j], 'k',linewidth=0.5)
+
+plt.plot(x2d[0,:],y2d[0,:],'k-',linewidth=0.5)
+plt.plot(x2d[-1,:],y2d[-1,:],'k-',linewidth=0.5)
+plt.plot(x2d[:,0],y2d[:,0],'k-',linewidth=0.5)
+plt.plot(x2d[:,-1],y2d[:,-1],'k-',linewidth=0.5)
+
+plt.title('Mesh grid')
+plt.savefig('grid.png')
+
 
 ################################ vector plot
 fig2 = plt.figure()
@@ -213,6 +237,41 @@ plt.plot(uv2d[i,:],yp2d[i,:],'b-')
 plt.xlabel('$\overline{u^\prime v^\prime}$')
 plt.ylabel('y/H')
 plt.savefig('uv_python.png')
+
+################################ Reynolds stress x-dir plot
+fig2 = plt.figure()
+plt.subplots_adjust(left=0.20,top=0.80,bottom=0.20)
+#plt.pcolormesh(xp2d,yp2d,duvdy, vmin=-5,vmax=5,cmap=plt.get_cmap('hot'),shading='gouraud')
+plt.pcolormesh(xp2d,yp2d,duvdx)
+plt.colorbar()
+plt.xlabel("$x$")
+plt.ylabel("$y$")
+plt.title(r"the gradient $\partial \bar{uv}_1/\partial x_1$")
+plt.savefig('duvdx.png')
+
+################################ Reynolds stress x-dir plot
+fig2 = plt.figure()
+plt.subplots_adjust(left=0.20,top=0.80,bottom=0.20)
+#plt.pcolormesh(xp2d,yp2d,duvdy, vmin=-5,vmax=5,cmap=plt.get_cmap('hot'),shading='gouraud')
+plt.pcolormesh(xp2d,yp2d,duvdy)
+plt.colorbar()
+plt.xlabel("$x$")
+plt.ylabel("$y$")
+plt.title(r"the gradient $\partial \bar{uv}_1/\partial x_2$")
+plt.savefig('duvdy.png')
+
+
+# ################################ XX plot
+# fig2 = plt.figure()
+# plt.subplots_adjust(left=0.20,top=0.80,bottom=0.20)
+# plt.pcolormesh(xp2d,yp2d,omega2d, vmin=-5,vmax=5,cmap=plt.get_cmap('hot'),shading='gouraud')
+# plt.colorbar()
+# plt.xlabel("$x$")
+# plt.ylabel("$y$")
+# plt.title(r"omega")
+# plt.savefig('omega.png')
+
+
 
 
 
