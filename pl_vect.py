@@ -273,6 +273,7 @@ plt.savefig('duvdy.png')
 # plt.title(r"omega")
 # plt.savefig('omega.png')
 
+#Added small wave again, but not sure it committed
 
 
 
