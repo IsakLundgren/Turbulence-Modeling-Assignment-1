@@ -194,7 +194,7 @@ dpdy=dphidx(p2d_face_w,p2d_face_s,areawy,areasy,vol)
 dVVdy=dphidx(VV2d_face_w,VV2d_face_s,areawy,areasy,vol)
 dUVdy=dphidx(UV2d_face_w,UV2d_face_s,areawy,areasy,vol)
 duvdy = dphidx(uv2d_face_w,uv2d_face_s,areawy,areasy,vol) # reynolds stresses y-dir
-dvvdx = dphidx(vv2d_face_w,vv2d_face_s,areawy,areasy,vol)# TKR gradient y-dir
+dvvdy = dphidx(vv2d_face_w,vv2d_face_s,areawy,areasy,vol)# TKR gradient y-dir
 
 # Face values of derivatives
 dudx_w,dudx_s=compute_face_phi(dudx,fx,fy,ni,nj)
@@ -210,10 +210,7 @@ dvdxdx = dphidx(dvdx_w,dvdx_s,areawx,areasx,vol)
 dudydy = dphidx(dudy_w,dudy_s,areawy,areasy,vol)
 dvdydy = dphidx(dvdy_w,dvdy_s,areawy,areasy,vol)
 
-
-
 omega2d=eps2d/k2d/0.09
-
 
 ################################ mesh plot
 
@@ -270,7 +267,6 @@ plt.savefig('uv_python.png')
 #Fresh code#
 ############
 
-
 ################################ Pressure gradient x-dir
 fig2 = plt.figure()
 plt.subplots_adjust(left=0.20,top=0.80,bottom=0.20)
@@ -303,7 +299,7 @@ plt.savefig('duvdy.png')
 
 #Station plotting
 
-i_close = 3 #Index close to the wall
+i_close = 3 #Index close to the inlet
 i_circ = 30 #Index in circulating region
 
 x_close = x[i_close]
@@ -319,3 +315,43 @@ plt.xlabel('$\overline{u^\prime v^\prime}$')
 plt.ylabel('y/H')
 plt.legend()
 plt.savefig('stationStress.png')
+
+#Momentum components for the close case
+plotloopivals = [i_close,i_circ]
+
+for plotIteration in range(2):
+
+  i = plotloopivals[plotIteration]
+
+  #TODO clean plots
+  fig2 = plt.figure()
+  plt.subplots_adjust(left=0.20,top=0.80,bottom=0.20)
+  i=10
+  plt.plot(dUUdx[i,:],yp2d[i,:], label='First convection term')
+  plt.plot(dUVdy[i,:],yp2d[i,:], label='Second convection term')
+  plt.plot(-dpdx[i,:],yp2d[i,:], label='Pressure gradient term')
+  plt.plot(nu*dudxdx[i,:],yp2d[i,:], label='First viscous diffusion term')
+  plt.plot(nu*dudydy[i,:],yp2d[i,:], label='Second viscous diffusion term')
+  plt.plot(-duudx[i,:],yp2d[i,:], label='First turbulent diffusion term')
+  plt.plot(-duvdy[i,:],yp2d[i,:], label='Second turbulent diffusion term (Reynolds stress gradient)')
+  plt.title('x-momentum, x = ' + str(x_close))
+  plt.xlabel('$\overline{u^\prime v^\prime}$')
+  plt.ylabel('y/H')
+  plt.legend()
+  plt.savefig('x-momentumClose.png')
+
+  fig2 = plt.figure()
+  plt.subplots_adjust(left=0.20,top=0.80,bottom=0.20)
+  i=10
+  plt.plot(dUVdx[i,:],yp2d[i,:], label='First convection term')
+  plt.plot(dVVdy[i,:],yp2d[i,:], label='Second convection term')
+  plt.plot(-dpdy[i,:],yp2d[i,:], label='Pressure gradient term')
+  plt.plot(nu*dvdxdx[i,:],yp2d[i,:], label='First viscous diffusion term')
+  plt.plot(nu*dvdydy[i,:],yp2d[i,:], label='Second viscous diffusion term')
+  plt.plot(-duvdx[i,:],yp2d[i,:], label='First turbulent diffusion term')
+  plt.plot(-dvvdy[i,:],yp2d[i,:], label='Second turbulent diffusion term (Reynolds stress gradient)')
+  plt.title('x-momentum, x = ' + str(x_close))
+  plt.xlabel('$\overline{u^\prime v^\prime}$')
+  plt.ylabel('y/H')
+  plt.legend()
+  plt.savefig('x-momentumClose.png')
