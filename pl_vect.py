@@ -244,26 +244,34 @@ plt.savefig('uv_python.png')
 #Fresh code#
 ############
 
+################################ Pressure gradient x-dir
+fig2 = plt.figure()
+plt.subplots_adjust(left=0.20,top=0.80,bottom=0.20)
+plt.pcolormesh(xp2d,yp2d,dpdx)
+plt.colorbar()
+plt.xlabel("$x$")
+plt.ylabel("$y$")
+plt.title(r"the gradient $\partial p/\partial x_1$")
+plt.savefig('dpdx.png')
+
 ################################ Reynolds stress x-dir plot
 fig2 = plt.figure()
 plt.subplots_adjust(left=0.20,top=0.80,bottom=0.20)
-#plt.pcolormesh(xp2d,yp2d,duvdy, vmin=-5,vmax=5,cmap=plt.get_cmap('hot'),shading='gouraud')
 plt.pcolormesh(xp2d,yp2d,duvdx)
 plt.colorbar()
 plt.xlabel("$x$")
 plt.ylabel("$y$")
-plt.title(r"the gradient $\partial \bar{uv}_1/\partial x_1$")
+plt.title(r"the gradient $\partial \bar{v_1'v_2'}/\partial x_1$")
 plt.savefig('duvdx.png')
 
 ################################ Reynolds stress x-dir plot
 fig2 = plt.figure()
 plt.subplots_adjust(left=0.20,top=0.80,bottom=0.20)
-#plt.pcolormesh(xp2d,yp2d,duvdy, vmin=-5,vmax=5,cmap=plt.get_cmap('hot'),shading='gouraud')
 plt.pcolormesh(xp2d,yp2d,duvdy)
 plt.colorbar()
 plt.xlabel("$x$")
 plt.ylabel("$y$")
-plt.title(r"the gradient $\partial \bar{uv}_1/\partial x_2$")
+plt.title(r"the gradient $\partial \bar{v_1'v_2'}/\partial x_2$")
 plt.savefig('duvdy.png')
 
 
