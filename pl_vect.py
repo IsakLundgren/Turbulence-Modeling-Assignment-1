@@ -320,38 +320,62 @@ plt.savefig('stationStress.png')
 plotloopivals = [i_close,i_circ]
 
 for plotIteration in range(2):
+    
+    i = plotloopivals[plotIteration]
+    
+    # R1.2
+    #TODO clean plots
+    fig2 = plt.figure()
+    plt.subplots_adjust(left=0.20,top=0.80,bottom=0.20)
+    i=10
+    plt.plot(dUUdx[i,:],yp2d[i,:], label='First convection term')
+    plt.plot(dUVdy[i,:],yp2d[i,:], label='Second convection term')
+    plt.plot(-dpdx[i,:],yp2d[i,:], label='Pressure gradient term')
+    plt.plot(nu*dudxdx[i,:],yp2d[i,:], label='First viscous diffusion term')
+    plt.plot(nu*dudydy[i,:],yp2d[i,:], label='Second viscous diffusion term')
+    plt.plot(-duudx[i,:],yp2d[i,:], label='First turbulent diffusion term')
+    plt.plot(-duvdy[i,:],yp2d[i,:], label='Second turbulent diffusion term (Reynolds stress gradient)')
+    plt.title('x-momentum, x = ' + str(x_close))
+    plt.xlabel('$\overline{u^\prime v^\prime}$')
+    plt.ylabel('y/H')
+    #plt.legend()
+    plt.savefig('x-momentumClose.png')
+    
+    fig2 = plt.figure()
+    plt.subplots_adjust(left=0.20,top=0.80,bottom=0.20)
+    i=10
+    plt.plot(dUVdx[i,:],yp2d[i,:], label='First convection term')
+    plt.plot(dVVdy[i,:],yp2d[i,:], label='Second convection term')
+    plt.plot(-dpdy[i,:],yp2d[i,:], label='Pressure gradient term')
+    plt.plot(nu*dvdxdx[i,:],yp2d[i,:], label='First viscous diffusion term')
+    plt.plot(nu*dvdydy[i,:],yp2d[i,:], label='Second viscous diffusion term')
+    plt.plot(-duvdx[i,:],yp2d[i,:], label='First turbulent diffusion term')
+    plt.plot(-dvvdy[i,:],yp2d[i,:], label='Second turbulent diffusion term (Reynolds stress gradient)')
+    plt.title('x-momentum, x = ' + str(x_close))
+    plt.xlabel('$\overline{u^\prime v^\prime}$')
+    plt.ylabel('y/H')
+    #plt.legend()
+    plt.savefig('x-momentumClose.png')
 
-  i = plotloopivals[plotIteration]
+### R1.3 Production term
+# The four components of the producton term of the reynoldsstress 
+Pk1 = -uu2d*dudx
+Pk2 = -uv2d*dudy
+Pk3 = -uv2d*dvdx
+Pk4 = -vv2d*dvdy
 
-  #TODO clean plots
-  fig2 = plt.figure()
-  plt.subplots_adjust(left=0.20,top=0.80,bottom=0.20)
-  i=10
-  plt.plot(dUUdx[i,:],yp2d[i,:], label='First convection term')
-  plt.plot(dUVdy[i,:],yp2d[i,:], label='Second convection term')
-  plt.plot(-dpdx[i,:],yp2d[i,:], label='Pressure gradient term')
-  plt.plot(nu*dudxdx[i,:],yp2d[i,:], label='First viscous diffusion term')
-  plt.plot(nu*dudydy[i,:],yp2d[i,:], label='Second viscous diffusion term')
-  plt.plot(-duudx[i,:],yp2d[i,:], label='First turbulent diffusion term')
-  plt.plot(-duvdy[i,:],yp2d[i,:], label='Second turbulent diffusion term (Reynolds stress gradient)')
-  plt.title('x-momentum, x = ' + str(x_close))
-  plt.xlabel('$\overline{u^\prime v^\prime}$')
-  plt.ylabel('y/H')
-  #plt.legend()
-  plt.savefig('x-momentumClose.png')
+fig3 = plt.figure()
+plt.plot(Pk1[1,:],yp2d[1,:], label=r'$P^k1$')
+plt.plot(Pk2[1,:],yp2d[1,:], label=r'$P^k2$')
+plt.plot(Pk3[1,:],yp2d[1,:], label=r'$P^k3$')
+plt.plot(Pk4[1,:],yp2d[1,:], label=r'$P^k4$')
+plt.xlabel(r'$P^k$')
+plt.ylabel('y/H')
+plt.title('Production terms')
+plt.legend()
 
-  fig2 = plt.figure()
-  plt.subplots_adjust(left=0.20,top=0.80,bottom=0.20)
-  i=10
-  plt.plot(dUVdx[i,:],yp2d[i,:], label='First convection term')
-  plt.plot(dVVdy[i,:],yp2d[i,:], label='Second convection term')
-  plt.plot(-dpdy[i,:],yp2d[i,:], label='Pressure gradient term')
-  plt.plot(nu*dvdxdx[i,:],yp2d[i,:], label='First viscous diffusion term')
-  plt.plot(nu*dvdydy[i,:],yp2d[i,:], label='Second viscous diffusion term')
-  plt.plot(-duvdx[i,:],yp2d[i,:], label='First turbulent diffusion term')
-  plt.plot(-dvvdy[i,:],yp2d[i,:], label='Second turbulent diffusion term (Reynolds stress gradient)')
-  plt.title('x-momentum, x = ' + str(x_close))
-  plt.xlabel('$\overline{u^\prime v^\prime}$')
-  plt.ylabel('y/H')
-  #plt.legend()
-  plt.savefig('x-momentumClose.png')
+# Plot the dissipation
+
+
+
+
