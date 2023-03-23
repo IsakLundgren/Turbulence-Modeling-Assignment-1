@@ -170,20 +170,46 @@ eps2d[:,-1]=eps2d[:,-2]
 # compute face value of U and V
 u2d_face_w,u2d_face_s=compute_face_phi(u2d,fx,fy,ni,nj)
 v2d_face_w,v2d_face_s=compute_face_phi(v2d,fx,fy,ni,nj)
+UU2d_face_w,UU2d_face_s=compute_face_phi(u2d**2,fx,fy,ni,nj)
+VV2d_face_w,VV2d_face_s=compute_face_phi(v2d**2,fx,fy,ni,nj)
+UV2d_face_w,UV2d_face_s=compute_face_phi(np.multiply(u2d,v2d),fx,fy,ni,nj)
 p2d_face_w,p2d_face_s=compute_face_phi(p2d,fx,fy,ni,nj)
 uv2d_face_w,uv2d_face_s=compute_face_phi(uv2d,fx,fy,ni,nj) # reynolds components
+uu2d_face_w,uu2d_face_s=compute_face_phi(uu2d,fx,fy,ni,nj) # Turbulent kinetic energy x
+vv2d_face_w,vv2d_face_s=compute_face_phi(vv2d,fx,fy,ni,nj) # Turbulent kinetic energy y
 
 # x derivatives
 dudx=dphidx(u2d_face_w,u2d_face_s,areawx,areasx,vol)
 dvdx=dphidx(v2d_face_w,v2d_face_s,areawx,areasx,vol)
 dpdx=dphidx(p2d_face_w,p2d_face_s,areawx,areasx,vol)
+dUUdx=dphidx(UU2d_face_w,UU2d_face_s,areawx,areasx,vol)
+dUVdx=dphidx(UV2d_face_w,UV2d_face_s,areawx,areasx,vol)
 duvdx = dphidx(uv2d_face_w,uv2d_face_s,areawx,areasx,vol) # reynolds stressesx-dir
+duudx = dphidx(uu2d_face_w,uu2d_face_s,areawx,areasx,vol)# TKR gradient x-dir
 
 # y derivatives
 dudy=dphidx(u2d_face_w,u2d_face_s,areawy,areasy,vol)
 dvdy=dphidx(v2d_face_w,v2d_face_s,areawy,areasy,vol)
 dpdy=dphidx(p2d_face_w,p2d_face_s,areawy,areasy,vol)
+dVVdy=dphidx(VV2d_face_w,VV2d_face_s,areawy,areasy,vol)
+dUVdy=dphidx(UV2d_face_w,UV2d_face_s,areawy,areasy,vol)
 duvdy = dphidx(uv2d_face_w,uv2d_face_s,areawy,areasy,vol) # reynolds stresses y-dir
+dvvdx = dphidx(vv2d_face_w,vv2d_face_s,areawy,areasy,vol)# TKR gradient y-dir
+
+# Face values of derivatives
+dudx_w,dudx_s=compute_face_phi(dudx,fx,fy,ni,nj)
+dvdx_w,dvdx_s=compute_face_phi(dvdx,fx,fy,ni,nj)
+dudy_w,dudy_s=compute_face_phi(dudy,fx,fy,ni,nj)
+dvdy_w,dvdy_s=compute_face_phi(dvdy,fx,fy,ni,nj)
+
+# second derivatives
+  #x
+dudxdx = dphidx(dudx_w,dudx_s,areawx,areasx,vol)
+dvdxdx = dphidx(dvdx_w,dvdx_s,areawx,areasx,vol)
+  #y
+dudydy = dphidx(dudy_w,dudy_s,areawy,areasy,vol)
+dvdydy = dphidx(dvdy_w,dvdy_s,areawy,areasy,vol)
+
 
 
 omega2d=eps2d/k2d/0.09
@@ -283,6 +309,7 @@ i_circ = 30 #Index in circulating region
 x_close = x[i_close]
 x_circ = x[i_circ]
 
+#Reynolds stress
 fig2 = plt.figure()
 plt.subplots_adjust(left=0.20,top=0.80,bottom=0.20)
 i=10
