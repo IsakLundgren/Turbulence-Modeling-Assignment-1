@@ -188,13 +188,13 @@ duvdx = dphidx(uv2d_face_w,uv2d_face_s,areawx,areasx,vol) # reynolds stressesx-d
 duudx = dphidx(uu2d_face_w,uu2d_face_s,areawx,areasx,vol)# TKR gradient x-dir
 
 # y derivatives
-dudy=dphidx(u2d_face_w,u2d_face_s,areawy,areasy,vol)
-dvdy=dphidx(v2d_face_w,v2d_face_s,areawy,areasy,vol)
-dpdy=dphidx(p2d_face_w,p2d_face_s,areawy,areasy,vol)
-dVVdy=dphidx(VV2d_face_w,VV2d_face_s,areawy,areasy,vol)
-dUVdy=dphidx(UV2d_face_w,UV2d_face_s,areawy,areasy,vol)
-duvdy = dphidx(uv2d_face_w,uv2d_face_s,areawy,areasy,vol) # reynolds stresses y-dir
-dvvdy = dphidx(vv2d_face_w,vv2d_face_s,areawy,areasy,vol)# TKR gradient y-dir
+dudy=dphidy(u2d_face_w,u2d_face_s,areawy,areasy,vol)
+dvdy=dphidy(v2d_face_w,v2d_face_s,areawy,areasy,vol)
+dpdy=dphidy(p2d_face_w,p2d_face_s,areawy,areasy,vol)
+dVVdy=dphidy(VV2d_face_w,VV2d_face_s,areawy,areasy,vol)
+dUVdy=dphidy(UV2d_face_w,UV2d_face_s,areawy,areasy,vol)
+duvdy = dphidy(uv2d_face_w,uv2d_face_s,areawy,areasy,vol) # reynolds stresses y-dir
+dvvdy = dphidy(vv2d_face_w,vv2d_face_s,areawy,areasy,vol)# TKR gradient y-dir
 
 # Face values of derivatives
 dudx_w,dudx_s=compute_face_phi(dudx,fx,fy,ni,nj)
@@ -207,8 +207,8 @@ dvdy_w,dvdy_s=compute_face_phi(dvdy,fx,fy,ni,nj)
 dudxdx = dphidx(dudx_w,dudx_s,areawx,areasx,vol)
 dvdxdx = dphidx(dvdx_w,dvdx_s,areawx,areasx,vol)
   #y
-dudydy = dphidx(dudy_w,dudy_s,areawy,areasy,vol)
-dvdydy = dphidx(dvdy_w,dvdy_s,areawy,areasy,vol)
+dudydy = dphidy(dudy_w,dudy_s,areawy,areasy,vol)
+dvdydy = dphidy(dvdy_w,dvdy_s,areawy,areasy,vol)
 
 omega2d=eps2d/k2d/0.09
 
@@ -337,7 +337,7 @@ for plotIteration in range(2):
   plt.title('x-momentum, x = ' + str(x_close))
   plt.xlabel('$\overline{u^\prime v^\prime}$')
   plt.ylabel('y/H')
-  plt.legend()
+  #plt.legend()
   plt.savefig('x-momentumClose.png')
 
   fig2 = plt.figure()
@@ -353,5 +353,5 @@ for plotIteration in range(2):
   plt.title('x-momentum, x = ' + str(x_close))
   plt.xlabel('$\overline{u^\prime v^\prime}$')
   plt.ylabel('y/H')
-  plt.legend()
+  #plt.legend()
   plt.savefig('x-momentumClose.png')
