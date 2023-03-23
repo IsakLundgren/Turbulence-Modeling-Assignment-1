@@ -8,6 +8,8 @@ plt.rcParams.update({'font.size': 22})
 
 plt.interactive(True)
 
+x = 2000
+
 plt.close('all')
 
 x=10
