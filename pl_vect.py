@@ -244,6 +244,7 @@ plt.savefig('uv_python.png')
 #Fresh code#
 ############
 
+
 ################################ Pressure gradient x-dir
 fig2 = plt.figure()
 plt.subplots_adjust(left=0.20,top=0.80,bottom=0.20)
@@ -274,19 +275,20 @@ plt.ylabel("$y$")
 plt.title(r"the gradient $\partial \bar{v_1'v_2'}/\partial x_2$")
 plt.savefig('duvdy.png')
 
+#Station plotting
 
-# ################################ XX plot
-# fig2 = plt.figure()
-# plt.subplots_adjust(left=0.20,top=0.80,bottom=0.20)
-# plt.pcolormesh(xp2d,yp2d,omega2d, vmin=-5,vmax=5,cmap=plt.get_cmap('hot'),shading='gouraud')
-# plt.colorbar()
-# plt.xlabel("$x$")
-# plt.ylabel("$y$")
-# plt.title(r"omega")
-# plt.savefig('omega.png')
+i_close = 3 #Index close to the wall
+i_circ = 30 #Index in circulating region
 
-#Added small wave again, but not sure it committed
+x_close = x[i_close]
+x_circ = x[i_circ]
 
-
-
-
+fig2 = plt.figure()
+plt.subplots_adjust(left=0.20,top=0.80,bottom=0.20)
+i=10
+plt.plot(uv2d[i_close,:],yp2d[i_close,:],'b-', label=('x = ' + str(x_close)))
+plt.plot(uv2d[i_circ,:],yp2d[i_circ,:],'r-', label=('x = ' + str(x_circ)))
+plt.xlabel('$\overline{u^\prime v^\prime}$')
+plt.ylabel('y/H')
+plt.legend()
+plt.savefig('stationStress.png')
