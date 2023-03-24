@@ -356,7 +356,7 @@ for plotIteration in range(2):
   #plt.legend()
   plt.savefig('x-momentumClose.png')
 
-#Q1.4
+#Q1.4.5
 
 #Choosing stress 11 and 12
 #Setup turbulent viscosity
@@ -422,3 +422,16 @@ TurbulentReynolds12 = 1/sigma_k * (dnu_tduvdxdx + dnu_tduvdydy)
 #Destruction term
 DestructionReynolds11 = 2/3 * eps2d
 DestructionReynolds12 = 0
+
+#TODO plotting
+
+#Q1.4.6
+
+#B for Boussinesq
+
+uuB11 = np.multiply(nu_t,(dudx + dudx)) + 2/3 * k2d
+uuB12 = np.multiply(nu_t,(dudy + dvdx))
+uuB21 = uuB12
+uuB22 = np.multiply(nu_t,(dudx + dudx)) + 2/3 * k2d
+
+#TODO plotting
