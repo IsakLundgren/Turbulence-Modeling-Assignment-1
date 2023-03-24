@@ -299,7 +299,7 @@ plt.savefig('duvdy.png')
 
 #Station plotting
 
-i_close = 3 #Index close to the inlet
+i_close = 3 #Index close to the inlet (Might be too close)
 i_circ = 30 #Index in circulating region
 
 x_close = x[i_close]
@@ -355,3 +355,52 @@ for plotIteration in range(2):
   plt.ylabel('y/H')
   #plt.legend()
   plt.savefig('x-momentumClose.png')
+
+#Q1.4
+
+#Choosing stress 11 and 12
+
+#Compute face values
+Uuu_w,Uuu_s=compute_face_phi(np.multiply(u2d,uu2d),fx,fy,ni,nj)
+Vuu_w,Vuu_s=compute_face_phi(np.multiply(v2d,uu2d),fx,fy,ni,nj)
+Uuv_w,Uuv_s=compute_face_phi(np.multiply(u2d,uv2d),fx,fy,ni,nj)
+Vuv_w,Vuv_s=compute_face_phi(np.multiply(v2d,uv2d),fx,fy,ni,nj)
+
+#Compute first derivatives
+  # x
+dUuudx = dphidx(Uuu_w,Uuu_s,areawx,areasx,vol)
+dUuvdx = dphidx(Uuv_w,Uuv_s,areawx,areasx,vol)
+
+  # y
+dVuudy = dphidy(Vuu_w,Vuu_s,areawy,areasy,vol)
+dVuvdy = dphidy(Vuv_w,Vuv_s,areawy,areasy,vol)
+duudy = dphidy(uu2d_face_w,uu2d_face_s,areawy,areasy,vol)
+
+#Compute derivative face values
+duudx_w,duudx_s = compute_face_phi(duudx,fx,fy,ni,nj)
+duvdx_w,duvdx_s = compute_face_phi(duvdx,fx,fy,ni,nj)
+duudy_w,duudy_s = compute_face_phi(duudy,fx,fy,ni,nj)
+duvdy_w,duvdy_s = compute_face_phi(duvdy,fx,fy,ni,nj)
+
+#Compute second derivatives
+  #x
+duudxdx = dphidx(duudx_w,duudx_s,areawx,areasx,vol)
+duvdxdx = dphidx(duvdx_w,duvdx_s,areawx,areasx,vol)
+
+  #y
+duudydy = dphidy(duudy_w,duudy_s,areawy,areasy,vol)
+duvdydy = dphidy(duvdy_w,duvdy_s,areawy,areasy,vol)
+
+#Convective term
+ConvectiveReynolds11 = dUuudx + dVuudy
+ConvectiveReynolds12 = dUuvdx + dVuvdy
+
+#Viscous dissipation term
+ViscousReynolds11 = nu * (duudxdx + duudydy)
+ViscousReynolds12 = nu * (duvdxdx + duvdydy)
+
+#Produciton term
+ProductionReynolds11 = - 2 * (np.multiply(uu2d,dudx) + np.multiply(uv2d,dudy))
+ProductionReynolds12 = - (np.multiply(uu2d,dvdx) + np.multiply(uv2d,dvdy)) - (np.multiply(uv2d,dudx) + np.multiply(vv2d,dudy))
+
+#TODO which pressure strain term model???
