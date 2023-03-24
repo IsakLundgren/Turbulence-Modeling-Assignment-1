@@ -423,7 +423,7 @@ TurbulentReynolds12 = 1/sigma_k * (dnu_tduvdxdx + dnu_tduvdydy)
 DestructionReynolds11 = 2/3 * eps2d
 DestructionReynolds12 = 0
 
-#TODO plotting
+#TODO plotting and make them 1d
 
 #Q1.4.6
 
@@ -435,3 +435,20 @@ uuB21 = uuB12
 uuB22 = np.multiply(nu_t,(dudx + dudx)) + 2/3 * k2d
 
 #TODO plotting
+
+#Q1.4.7
+
+ProductionTKE = -(np.multiply(uu2d,dudx) + np.multiply(uv2d,dudy) + np.multiply(uv2d,dvdx) + np.multiply(vv2d,dvdy)) #Turbulent Kinetic Energy
+FindNegativesPTKE = np.sign(ProductionTKE)
+
+################################ Pressure gradient x-dir
+fig2 = plt.figure()
+plt.subplots_adjust(left=0.20,top=0.80,bottom=0.20)
+plt.pcolormesh(xp2d,yp2d,FindNegativesPTKE)
+plt.colorbar()
+plt.xlabel("$x$")
+plt.ylabel("$y$")
+plt.title(r"Sign function of the exact TKE production term")
+plt.savefig('PTKENeg.png')
+
+#Q1.4.7
