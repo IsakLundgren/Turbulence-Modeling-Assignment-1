@@ -359,6 +359,10 @@ for plotIteration in range(2):
 #Q1.4
 
 #Choosing stress 11 and 12
+#Setup turbulent viscosity
+C_mu = 0.009
+sigma_k = 1
+nu_t = C_mu * np.divide(np.multiply(k2d,k2d),eps2d)
 
 #Compute face values
 Uuu_w,Uuu_s=compute_face_phi(np.multiply(u2d,uu2d),fx,fy,ni,nj)
@@ -381,21 +385,26 @@ duudx_w,duudx_s = compute_face_phi(duudx,fx,fy,ni,nj)
 duvdx_w,duvdx_s = compute_face_phi(duvdx,fx,fy,ni,nj)
 duudy_w,duudy_s = compute_face_phi(duudy,fx,fy,ni,nj)
 duvdy_w,duvdy_s = compute_face_phi(duvdy,fx,fy,ni,nj)
+nu_t_w,nu_t_s = compute_face_phi(nu_t,fx,fy,ni,nj)
 
 #Compute second derivatives
   #x
 duudxdx = dphidx(duudx_w,duudx_s,areawx,areasx,vol)
 duvdxdx = dphidx(duvdx_w,duvdx_s,areawx,areasx,vol)
+dnu_tduudxdx = dphidx(np.multiply(nu_t_w,duudx_w),np.multiply(nu_t_s,duudx_s),areawx,areasx,vol)
+dnu_tduvdxdx = dphidx(np.multiply(nu_t_w,duvdx_w),np.multiply(nu_t_s,duvdx_s),areawx,areasx,vol)
 
   #y
 duudydy = dphidy(duudy_w,duudy_s,areawy,areasy,vol)
 duvdydy = dphidy(duvdy_w,duvdy_s,areawy,areasy,vol)
+dnu_tduudydy = dphidy(np.multiply(nu_t_w,duudy_w),np.multiply(nu_t_s,duudy_s),areawy,areasy,vol)
+dnu_tduvdydy = dphidy(np.multiply(nu_t_w,duvdy_w),np.multiply(nu_t_s,duvdy_s),areawy,areasy,vol)
 
 #Convective term
 ConvectiveReynolds11 = dUuudx + dVuudy
 ConvectiveReynolds12 = dUuvdx + dVuvdy
 
-#Viscous dissipation term
+#Viscous diffusion term
 ViscousReynolds11 = nu * (duudxdx + duudydy)
 ViscousReynolds12 = nu * (duvdxdx + duvdydy)
 
@@ -403,4 +412,13 @@ ViscousReynolds12 = nu * (duvdxdx + duvdydy)
 ProductionReynolds11 = - 2 * (np.multiply(uu2d,dudx) + np.multiply(uv2d,dudy))
 ProductionReynolds12 = - (np.multiply(uu2d,dvdx) + np.multiply(uv2d,dvdy)) - (np.multiply(uv2d,dudx) + np.multiply(vv2d,dudy))
 
+#Pressure-strain term
 #TODO which pressure strain term model???
+
+#Turbulent diffusion term
+TurbulentReynolds11 = 1/sigma_k * (dnu_tduudxdx + dnu_tduudydy)
+TurbulentReynolds12 = 1/sigma_k * (dnu_tduvdxdx + dnu_tduvdydy)
+
+#Destruction term
+DestructionReynolds11 = 2/3 * eps2d
+DestructionReynolds12 = 0
