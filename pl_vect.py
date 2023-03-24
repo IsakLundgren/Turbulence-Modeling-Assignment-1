@@ -451,4 +451,21 @@ plt.ylabel("$y$")
 plt.title(r"Sign function of the exact TKE production term")
 plt.savefig('PTKENeg.png')
 
-#Q1.4.7
+#Q1.4.8
+
+#Calculate Eigenvalues in each cell
+
+s11 = dudx
+s12 = 1/2 * (dudy + dvdx)
+s21 = s12
+s22 = dvdx
+
+SEig= np.zeros(shape = (ni,nj,2))
+nu_tReduction = np.zeros([ni,nj])
+
+for i in range(ni):
+   for j in range(nj):
+      SEig[i,j,:] = np.linalg.eigvals([[s11[i,j],s12[i,j]],[s21[i,j],s22[i,j]]])
+      nu_tReduction = nu_t > np.max(SEig)
+
+#TODO plotting
