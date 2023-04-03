@@ -84,9 +84,9 @@ vist_RANS=k_eps_RANS[:,2]
 
 ntstep=k_RANS[0]
 
-k_RANS2d=np.reshape(k_RANS,(nj,ni))/ntstep
-eps_RANS2d=np.reshape(eps_RANS,(nj,ni))/ntstep
-vist_RANS2d=np.reshape(vist_RANS,(nj,ni))/ntstep
+k_RANS2d=np.reshape(k_RANS,(ni,nj))/ntstep
+eps_RANS2d=np.reshape(eps_RANS,(ni,nj))/ntstep
+vist_RANS2d=np.reshape(vist_RANS,(ni,nj))/ntstep
 
 # x and y are fo the cell centers. The dphidx_dy routine needs the face coordinate, xf2d, yf2d
 # load them
@@ -212,90 +212,95 @@ dvdydy = dphidy(dvdy_w,dvdy_s,areawy,areasy,vol)
 
 omega2d=eps2d/k2d/0.09
 
+
+
+
+
+
 ################################ mesh plot
 
-fig = plt.figure()
-for i in range(0, ni-1):
-    plt.plot(x2d[i,:], y2d[i,:], 'k',linewidth=0.5)
+# fig = plt.figure()
+# for i in range(0, ni-1):
+#     plt.plot(x2d[i,:], y2d[i,:], 'k',linewidth=0.5)
     
     
-for j in range(0, nj-1):
-    plt.plot(x2d[:,j], y2d[:,j], 'k',linewidth=0.5)
+# for j in range(0, nj-1):
+#     plt.plot(x2d[:,j], y2d[:,j], 'k',linewidth=0.5)
 
-plt.plot(x2d[0,:],y2d[0,:],'k-',linewidth=0.5)
-plt.plot(x2d[-1,:],y2d[-1,:],'k-',linewidth=0.5)
-plt.plot(x2d[:,0],y2d[:,0],'k-',linewidth=0.5)
-plt.plot(x2d[:,-1],y2d[:,-1],'k-',linewidth=0.5)
+# plt.plot(x2d[0,:],y2d[0,:],'k-',linewidth=0.5)
+# plt.plot(x2d[-1,:],y2d[-1,:],'k-',linewidth=0.5)
+# plt.plot(x2d[:,0],y2d[:,0],'k-',linewidth=0.5)
+# plt.plot(x2d[:,-1],y2d[:,-1],'k-',linewidth=0.5)
 
-plt.title('Mesh grid')
-plt.savefig('grid.png')
-
-
-################################ vector plot
-fig2 = plt.figure()
-plt.subplots_adjust(left=0.20,top=0.80,bottom=0.20)
-k=6# plot every forth vector
-ss=3.2 #vector length
-plt.quiver(xp2d[::k,::k],yp2d[::k,::k],u2d[::k,::k],v2d[::k,::k],width=0.01)
-plt.xlabel("$x$")
-plt.ylabel("$y$")
-plt.title("vector plot")
-plt.savefig('vect_python.png')
-
-################################ contour plot
-fig2 = plt.figure()
-plt.subplots_adjust(left=0.20,top=0.80,bottom=0.20)
-plt.pcolormesh(xp2d,yp2d,dudy, vmin=-5,vmax=5,cmap=plt.get_cmap('hot'),shading='gouraud')
-plt.colorbar()
-plt.xlabel("$x$")
-plt.ylabel("$y$")
-plt.title(r"the gradient $\partial \bar{v}_1/\partial x_2$")
-plt.savefig('dudy.png')
+# plt.title('Mesh grid')
+# plt.savefig('grid.png')
 
 
-#************
-# plot uv
-fig2 = plt.figure()
-plt.subplots_adjust(left=0.20,top=0.80,bottom=0.20)
-i=10
-plt.plot(uv2d[i,:],yp2d[i,:],'b-')
-plt.xlabel('$\overline{u^\prime v^\prime}$')
-plt.ylabel('y/H')
-plt.savefig('uv_python.png')
+# ################################ vector plot
+# fig2 = plt.figure()
+# plt.subplots_adjust(left=0.20,top=0.80,bottom=0.20)
+# k=6# plot every forth vector
+# ss=3.2 #vector length
+# plt.quiver(xp2d[::k,::k],yp2d[::k,::k],u2d[::k,::k],v2d[::k,::k],width=0.01)
+# plt.xlabel("$x$")
+# plt.ylabel("$y$")
+# plt.title("vector plot")
+# plt.savefig('vect_python.png')
 
-############
-#Fresh code#
-############
+# ################################ contour plot
+# fig2 = plt.figure()
+# plt.subplots_adjust(left=0.20,top=0.80,bottom=0.20)
+# plt.pcolormesh(xp2d,yp2d,dudy, vmin=-5,vmax=5,cmap=plt.get_cmap('hot'),shading='gouraud')
+# plt.colorbar()
+# plt.xlabel("$x$")
+# plt.ylabel("$y$")
+# plt.title(r"the gradient $\partial \bar{v}_1/\partial x_2$")
+# plt.savefig('dudy.png')
 
-################################ Pressure gradient x-dir
-fig2 = plt.figure()
-plt.subplots_adjust(left=0.20,top=0.80,bottom=0.20)
-plt.pcolormesh(xp2d,yp2d,dpdx)
-plt.colorbar()
-plt.xlabel("$x$")
-plt.ylabel("$y$")
-plt.title(r"the gradient $\partial p/\partial x_1$")
-plt.savefig('dpdx.png')
 
-################################ Reynolds stress x-dir plot
-fig2 = plt.figure()
-plt.subplots_adjust(left=0.20,top=0.80,bottom=0.20)
-plt.pcolormesh(xp2d,yp2d,duvdx)
-plt.colorbar()
-plt.xlabel("$x$")
-plt.ylabel("$y$")
-plt.title(r"the gradient $\partial \bar{v_1'v_2'}/\partial x_1$")
-plt.savefig('duvdx.png')
+# #************
+# # plot uv
+# fig2 = plt.figure()
+# plt.subplots_adjust(left=0.20,top=0.80,bottom=0.20)
+# i=10
+# plt.plot(uv2d[i,:],yp2d[i,:],'b-')
+# plt.xlabel('$\overline{u^\prime v^\prime}$')
+# plt.ylabel('y/H')
+# plt.savefig('uv_python.png')
 
-################################ Reynolds stress x-dir plot
-fig2 = plt.figure()
-plt.subplots_adjust(left=0.20,top=0.80,bottom=0.20)
-plt.pcolormesh(xp2d,yp2d,duvdy)
-plt.colorbar()
-plt.xlabel("$x$")
-plt.ylabel("$y$")
-plt.title(r"the gradient $\partial \bar{v_1'v_2'}/\partial x_2$")
-plt.savefig('duvdy.png')
+# ############
+# #Fresh code#
+# ############
+
+# ################################ Pressure gradient x-dir
+# fig2 = plt.figure()
+# plt.subplots_adjust(left=0.20,top=0.80,bottom=0.20)
+# plt.pcolormesh(xp2d,yp2d,dpdx)
+# plt.colorbar()
+# plt.xlabel("$x$")
+# plt.ylabel("$y$")
+# plt.title(r"the gradient $\partial p/\partial x_1$")
+# plt.savefig('dpdx.png')
+
+# ################################ Reynolds stress x-dir plot
+# fig2 = plt.figure()
+# plt.subplots_adjust(left=0.20,top=0.80,bottom=0.20)
+# plt.pcolormesh(xp2d,yp2d,duvdx)
+# plt.colorbar()
+# plt.xlabel("$x$")
+# plt.ylabel("$y$")
+# plt.title(r"the gradient $\partial \bar{v_1'v_2'}/\partial x_1$")
+# plt.savefig('duvdx.png')
+
+# ################################ Reynolds stress x-dir plot
+# fig2 = plt.figure()
+# plt.subplots_adjust(left=0.20,top=0.80,bottom=0.20)
+# plt.pcolormesh(xp2d,yp2d,duvdy)
+# plt.colorbar()
+# plt.xlabel("$x$")
+# plt.ylabel("$y$")
+# plt.title(r"the gradient $\partial \bar{v_1'v_2'}/\partial x_2$")
+# plt.savefig('duvdy.png')
 
 #Station plotting
 
@@ -308,11 +313,11 @@ x_circ = x[i_circ]
 #Reynolds stress
 fig2 = plt.figure()
 plt.subplots_adjust(left=0.20,top=0.80,bottom=0.20)
-i=10
 plt.plot(uv2d[i_close,:],yp2d[i_close,:],'b-', label=('x = ' + str(x_close)))
 plt.plot(uv2d[i_circ,:],yp2d[i_circ,:],'r-', label=('x = ' + str(x_circ)))
 plt.xlabel('$\overline{u^\prime v^\prime}$')
 plt.ylabel('y/H')
+plt.title('Reynolds-stress')
 plt.legend()
 plt.savefig('stationStress.png')
 
@@ -320,38 +325,79 @@ plt.savefig('stationStress.png')
 plotloopivals = [i_close,i_circ]
 
 for plotIteration in range(2):
+    
+    i = plotloopivals[plotIteration]
+    
+    # R1.2
+    #TODO clean plots
+    fig2 = plt.figure()
+    plt.subplots_adjust(left=0.20,top=0.80,bottom=0.20)
+    plt.plot(dUUdx[i,:],yp2d[i,:], label='First convection term')
+    plt.plot(dUVdy[i,:],yp2d[i,:], label='Second convection term')
+    plt.plot(-dpdx[i,:],yp2d[i,:], label='Pressure gradient term')
+    plt.plot(nu*dudxdx[i,:],yp2d[i,:], label='First viscous diffusion term')
+    plt.plot(nu*dudydy[i,:],yp2d[i,:], label='Second viscous diffusion term')
+    plt.plot(-duudx[i,:],yp2d[i,:], label='First turbulent diffusion term')
+    plt.plot(-duvdy[i,:],yp2d[i,:], label='Second turbulent diffusion term (Reynolds stress gradient)')
+    plt.title('x-momentum, x = ' + str(x[plotloopivals[plotIteration]]))
+    plt.xlabel('$comp. of RANS$')
+    plt.ylabel('y/H')
+    #plt.legend()
+    plt.savefig('x-momentumClose.png')
+    
+    fig2 = plt.figure()
+    plt.subplots_adjust(left=0.20,top=0.80,bottom=0.20)
+    plt.plot(dUVdx[i,:],yp2d[i,:], label='First convection term')
+    plt.plot(dVVdy[i,:],yp2d[i,:], label='Second convection term')
+    plt.plot(-dpdy[i,:],yp2d[i,:], label='Pressure gradient term')
+    plt.plot(nu*dvdxdx[i,:],yp2d[i,:], label='First viscous diffusion term')
+    plt.plot(nu*dvdydy[i,:],yp2d[i,:], label='Second viscous diffusion term')
+    plt.plot(-duvdx[i,:],yp2d[i,:], label='First turbulent diffusion term')
+    plt.plot(-dvvdy[i,:],yp2d[i,:], label='Second turbulent diffusion term (Reynolds stress gradient)')
+    plt.title('x-momentum, x = ' + str(x[plotloopivals[plotIteration]]))
+    plt.xlabel('$comp. of RANS$')
+    plt.ylabel('y/H')
+    #plt.legend()
+    plt.savefig('x-momentumClose.png')
 
-  i = plotloopivals[plotIteration]
+### R1.3 Production term
+# The four components of the producton term of the reynoldsstress 
+Pk1 = -uu2d*dudx
+Pk2 = -uv2d*dudy
+Pk3 = -uv2d*dvdx
+Pk4 = -vv2d*dvdy
 
-  #TODO clean plots
-  fig2 = plt.figure()
-  plt.subplots_adjust(left=0.20,top=0.80,bottom=0.20)
-  i=10
-  plt.plot(dUUdx[i,:],yp2d[i,:], label='First convection term')
-  plt.plot(dUVdy[i,:],yp2d[i,:], label='Second convection term')
-  plt.plot(-dpdx[i,:],yp2d[i,:], label='Pressure gradient term')
-  plt.plot(nu*dudxdx[i,:],yp2d[i,:], label='First viscous diffusion term')
-  plt.plot(nu*dudydy[i,:],yp2d[i,:], label='Second viscous diffusion term')
-  plt.plot(-duudx[i,:],yp2d[i,:], label='First turbulent diffusion term')
-  plt.plot(-duvdy[i,:],yp2d[i,:], label='Second turbulent diffusion term (Reynolds stress gradient)')
-  plt.title('x-momentum, x = ' + str(x_close))
-  plt.xlabel('$\overline{u^\prime v^\prime}$')
-  plt.ylabel('y/H')
-  #plt.legend()
-  plt.savefig('x-momentumClose.png')
+#Daniel är kung
 
-  fig2 = plt.figure()
-  plt.subplots_adjust(left=0.20,top=0.80,bottom=0.20)
-  i=10
-  plt.plot(dUVdx[i,:],yp2d[i,:], label='First convection term')
-  plt.plot(dVVdy[i,:],yp2d[i,:], label='Second convection term')
-  plt.plot(-dpdy[i,:],yp2d[i,:], label='Pressure gradient term')
-  plt.plot(nu*dvdxdx[i,:],yp2d[i,:], label='First viscous diffusion term')
-  plt.plot(nu*dvdydy[i,:],yp2d[i,:], label='Second viscous diffusion term')
-  plt.plot(-duvdx[i,:],yp2d[i,:], label='First turbulent diffusion term')
-  plt.plot(-dvvdy[i,:],yp2d[i,:], label='Second turbulent diffusion term (Reynolds stress gradient)')
-  plt.title('x-momentum, x = ' + str(x_close))
-  plt.xlabel('$\overline{u^\prime v^\prime}$')
-  plt.ylabel('y/H')
-  #plt.legend()
-  plt.savefig('x-momentumClose.png')
+fig3 = plt.figure()
+plt.plot(Pk1[i_close,:],yp2d[i_close,:], label=r'$P^k1$')
+plt.plot(Pk2[i_close,:],yp2d[i_close,:], label=r'$P^k2$')
+plt.plot(Pk3[i_close,:],yp2d[i_close,:], label=r'$P^k3$')
+plt.plot(Pk4[i_close,:],yp2d[i_close,:], label=r'$P^k4$')
+plt.plot(eps2d[i_close,:], yp2d[i_close,:], label='eps') # dissipation
+plt.xlabel(r'$P^k$')
+plt.ylabel('y/H')
+plt.title('Production terms, inlet')
+plt.grid()
+plt.legend()
+plt.savefig('Pk_term_keq_close.png')
+
+fig3 = plt.figure()
+plt.plot(Pk1[i_circ,:],yp2d[i_circ,:], label=r'$P^k1$')
+plt.plot(Pk2[i_circ,:],yp2d[i_circ,:], label=r'$P^k2$')
+plt.plot(Pk3[i_circ,:],yp2d[i_circ,:], label=r'$P^k3$')
+plt.plot(Pk4[i_circ,:],yp2d[i_circ,:], label=r'$P^k4$')
+plt.plot(eps2d[i_circ,:], yp2d[i_circ,:], label='eps') # dissipation
+plt.xlabel(r'$P^k$')
+plt.ylabel('y/H')
+plt.title('Production terms, circulation')
+plt.grid()
+plt.legend()
+plt.savefig('Pk_term_keq_turbulent.png')
+
+
+
+
+
+
+
