@@ -2,6 +2,7 @@ import scipy.io as sio
 import numpy as np
 import sys
 import matplotlib.pyplot as plt
+import os
 #import gradients.py
 from gradients import compute_face_phi,dphidx,dphidy,init
 plt.rcParams.update({'font.size': 22})
@@ -84,9 +85,9 @@ vist_RANS=k_eps_RANS[:,2]
 
 ntstep=k_RANS[0]
 
-k_RANS2d=np.reshape(k_RANS,(nj,ni))/ntstep
-eps_RANS2d=np.reshape(eps_RANS,(nj,ni))/ntstep
-vist_RANS2d=np.reshape(vist_RANS,(nj,ni))/ntstep
+k_RANS2d=np.reshape(k_RANS,(ni,nj))/ntstep
+eps_RANS2d=np.reshape(eps_RANS,(ni,nj))/ntstep
+vist_RANS2d=np.reshape(vist_RANS,(ni,nj))/ntstep
 
 # x and y are fo the cell centers. The dphidx_dy routine needs the face coordinate, xf2d, yf2d
 # load them
@@ -361,7 +362,12 @@ for plotIteration in range(2):
 #Choosing stress 11 and 12
 #Setup turbulent viscosity
 C_mu = 0.009
+C_1 = 1.5
+C_2 = 0.6
+C_1w = 0.5
+C_2w = 0.3
 sigma_k = 1
+
 nu_t = C_mu * np.divide(np.multiply(k2d,k2d),eps2d)
 
 #Compute face values
@@ -413,14 +419,43 @@ ProductionReynolds11 = - 2 * (np.multiply(uu2d,dudx) + np.multiply(uv2d,dudy))
 ProductionReynolds12 = - (np.multiply(uu2d,dvdx) + np.multiply(uv2d,dvdy)) - (np.multiply(uv2d,dudx) + np.multiply(vv2d,dudy))
 
 #Pressure-strain term
-#TODO which pressure strain term model???
+#Preperatory terms
+ProductionTKE = -(np.multiply(uu2d,dudx) + np.multiply(uv2d,dudy) + np.multiply(uv2d,dvdx) + np.multiply(vv2d,dvdy)) #Turbulent Kinetic Energy
+
+calcWallDist = True
+
+if calcWallDist:
+    Walldistance = np.zeros((ni,nj))
+    for i in range(ni):
+        for j in range(nj):
+            Distances = np.zeros(ni)
+            for k in range(ni):
+                Distances[k] = np.sqrt((x2d[i,j]-x2d[k,1])**2 + (y2d[i,j]-y2d[k,1])**2)
+            Walldistance[i,j] = np.min(Distances)
+    
+    # Write Walldistance vector to file
+    np.savetxt("Walldistance.dat", Walldistance)
+else:
+    if os.path.isfile("Walldistance.dat"):
+        # Read Walldistance vector from file
+        Walldistance = np.loadtxt("Walldistance.dat")
+    else:
+        print("Error: Walldistance file not found.")
+
+
+SlowPressureReynolds11 = - C_1 * np.multiply(np.divide(eps_RANS2d,k_RANS2d),(uu2d - 2/3 * k_RANS2d))
+RapidPressureReynolds11 = - C_2 * (ProductionReynolds11 - 2/3 * ProductionTKE)
+SlowPressureReynolds12 = - C_1 * np.multiply(np.divide(eps_RANS2d,k_RANS2d),uv2d)
+RapidPressureReynolds12 = - C_2 * ProductionReynolds12
+
+
 
 #Turbulent diffusion term
 TurbulentReynolds11 = 1/sigma_k * (dnu_tduudxdx + dnu_tduudydy)
 TurbulentReynolds12 = 1/sigma_k * (dnu_tduvdxdx + dnu_tduvdydy)
 
 #Destruction term
-DestructionReynolds11 = 2/3 * eps2d
+DestructionReynolds11 = 2/3 * eps_RANS2d
 DestructionReynolds12 = 0
 
 #TODO plotting and make them 1d
@@ -438,7 +473,6 @@ uuB22 = np.multiply(nu_t,(dudx + dudx)) + 2/3 * k2d
 
 #Q1.4.7
 
-ProductionTKE = -(np.multiply(uu2d,dudx) + np.multiply(uv2d,dudy) + np.multiply(uv2d,dvdx) + np.multiply(vv2d,dvdy)) #Turbulent Kinetic Energy
 FindNegativesPTKE = np.sign(ProductionTKE)
 
 ################################ Pressure gradient x-dir
