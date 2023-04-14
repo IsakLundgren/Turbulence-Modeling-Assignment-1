@@ -422,7 +422,7 @@ ProductionReynolds12 = - (np.multiply(uu2d,dvdx) + np.multiply(uv2d,dvdy)) - (np
 #Preperatory terms
 ProductionTKE = -(np.multiply(uu2d,dudx) + np.multiply(uv2d,dudy) + np.multiply(uv2d,dvdx) + np.multiply(vv2d,dvdy)) #Turbulent Kinetic Energy
 
-calcWallDist = True
+calcWallDist = False
 
 if calcWallDist:
     Walldistance = np.zeros((ni,nj))
@@ -442,13 +442,23 @@ else:
     else:
         print("Error: Walldistance file not found.")
 
+dampingFunction = np.zeros((ni,nj))
+for i in range(ni):
+   for j in range(nj):
+      dampingFunction[i,j] = min(k_RANS2d[i,j]**(3/2)/(2.55*Walldistance[i,j]*eps_RANS2d[i,j]),1)
 
-SlowPressureReynolds11 = - C_1 * np.multiply(np.divide(eps_RANS2d,k_RANS2d),(uu2d - 2/3 * k_RANS2d))
-RapidPressureReynolds11 = - C_2 * (ProductionReynolds11 - 2/3 * ProductionTKE)
-SlowPressureReynolds12 = - C_1 * np.multiply(np.divide(eps_RANS2d,k_RANS2d),uv2d)
-RapidPressureReynolds12 = - C_2 * ProductionReynolds12
+SPR11 = - C_1 * np.multiply(np.divide(eps_RANS2d,k_RANS2d),(uu2d - 2/3 * k_RANS2d))
+RPR11 = - C_2 * (ProductionReynolds11 - 2/3 * ProductionTKE)
+SPR12 = - C_1 * np.multiply(np.divide(eps_RANS2d,k_RANS2d),uv2d)
+RPR12 = - C_2 * ProductionReynolds12
 
+SPWR11 = C_1w * np.multiply(np.divide(eps_RANS2d,k_RANS2d),vv2d,dampingFunction)
+RPWR11 = C_2w * np.multiply(RPR11,dampingFunction)
+SPWR12 = - 3/2 * C_1w * np.multiply(np.divide(eps_RANS2d,k_RANS2d),uv2d,dampingFunction)
+RPWR12 = - 3/2 * C_1w * np.multiply(RPR12,dampingFunction)
 
+PressureStrainReynolds11 = SPR11 + RPR11 + SPWR11 + RPWR11
+PressureStrainReynolds12 = SPR12 + RPR12 + SPWR12 + RPWR12
 
 #Turbulent diffusion term
 TurbulentReynolds11 = 1/sigma_k * (dnu_tduudxdx + dnu_tduudydy)
