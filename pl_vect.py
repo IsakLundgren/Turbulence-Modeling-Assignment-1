@@ -466,7 +466,7 @@ TurbulentReynolds12 = 1/sigma_k * (dnu_tduvdxdx + dnu_tduvdydy)
 
 #Destruction term
 DestructionReynolds11 = -2/3 * eps_RANS2d
-DestructionReynolds12 = -0
+DestructionReynolds12 = -np.zeros((ni,nj))
 
 fig2 = plt.figure()
 plt.subplots_adjust(left=0.20,top=0.80,bottom=0.20)
