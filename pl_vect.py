@@ -368,7 +368,7 @@ C_1w = 0.5
 C_2w = 0.3
 sigma_k = 1
 
-nu_t = C_mu * np.divide(np.multiply(k2d,k2d),eps2d)
+nu_t = C_mu * np.divide(np.multiply(k_RANS2d,k_RANS2d),eps_RANS2d)
 
 #Compute face values
 Uuu_w,Uuu_s=compute_face_phi(np.multiply(u2d,uu2d),fx,fy,ni,nj)
@@ -465,21 +465,71 @@ TurbulentReynolds11 = 1/sigma_k * (dnu_tduudxdx + dnu_tduudydy)
 TurbulentReynolds12 = 1/sigma_k * (dnu_tduvdxdx + dnu_tduvdydy)
 
 #Destruction term
-DestructionReynolds11 = 2/3 * eps_RANS2d
-DestructionReynolds12 = 0
+DestructionReynolds11 = -2/3 * eps_RANS2d
+DestructionReynolds12 = -0
 
-#TODO plotting and make them 1d
+fig2 = plt.figure()
+plt.subplots_adjust(left=0.20,top=0.80,bottom=0.20)
+i=i_close
+plt.plot(ConvectiveReynolds11[i,:],yp2d[i,:],label='Convective term')
+plt.plot(ViscousReynolds11[i,:],yp2d[i,:],label='Viscous diffusion term')
+plt.plot(ProductionReynolds11[i,:],yp2d[i,:],label='Production term')
+plt.plot(PressureStrainReynolds11[i,:],yp2d[i,:],label='Pressure strain term')
+plt.plot(TurbulentReynolds11[i,:],yp2d[i,:],label='Turbulent diffusion term')
+plt.plot(DestructionReynolds11[i,:],yp2d[i,:],label='Destruction term')
+
+plt.title('Reynolds 11 equation terms at x = ' + str(x_close))
+plt.xlabel('$Equation term magnitude [m^2s^{-3}]$')
+plt.ylabel('y/H')
+plt.legend()
+plt.savefig('Reynolds11.png')
+
+fig2 = plt.figure()
+plt.subplots_adjust(left=0.20,top=0.80,bottom=0.20)
+i=i_close
+plt.plot(ConvectiveReynolds12[i,:],yp2d[i,:],label='Convective term')
+plt.plot(ViscousReynolds12[i,:],yp2d[i,:],label='Viscous diffusion term')
+plt.plot(ProductionReynolds12[i,:],yp2d[i,:],label='Production term')
+plt.plot(PressureStrainReynolds12[i,:],yp2d[i,:],label='Pressure strain term')
+plt.plot(TurbulentReynolds12[i,:],yp2d[i,:],label='Turbulent diffusion term')
+plt.plot(DestructionReynolds12[i,:],yp2d[i,:],label='Destruction term')
+
+plt.title('Reynolds 12 equation terms at x = ' + str(x_close))
+plt.xlabel('$Equation term magnitude [m^2s^{-3}]$')
+plt.ylabel('y/H')
+plt.legend()
+plt.savefig('Reynolds12.png')
 
 #Q1.4.6
 
 #B for Boussinesq
 
-uuB11 = np.multiply(nu_t,(dudx + dudx)) + 2/3 * k2d
-uuB12 = np.multiply(nu_t,(dudy + dvdx))
-uuB21 = uuB12
-uuB22 = np.multiply(nu_t,(dudx + dudx)) + 2/3 * k2d
+uuB = -np.multiply(nu_t,(dudx + dudx)) + 2/3 * k_RANS2d
+uvB = -np.multiply(nu_t,(dudy + dvdx))
+vuB = uvB
+vvB = -np.multiply(nu_t,(dvdy + dvdy)) + 2/3 * k_RANS2d
 
-#TODO plotting
+NormDiff11 = 2 * np.divide((uu2d-uuB),(uu2d+uuB))
+NormDiff12 = 2 * np.divide((uv2d-uvB),(uv2d+uvB))
+
+fig2 = plt.figure()
+plt.subplots_adjust(left=0.20,top=0.80,bottom=0.20)
+plt.pcolormesh(xp2d,yp2d,NormDiff11)
+plt.colorbar()
+plt.xlabel("$x$")
+plt.ylabel("$y$")
+plt.title(r"Normalized difference 11 term")
+plt.savefig('BoussinesqComp11.png')
+
+fig2 = plt.figure()
+plt.subplots_adjust(left=0.20,top=0.80,bottom=0.20)
+plt.pcolormesh(xp2d,yp2d,NormDiff12)
+plt.colorbar()
+plt.xlabel("$x$")
+plt.ylabel("$y$")
+plt.title(r"Normalized difference 12 term")
+plt.savefig('BoussinesqComp12.png')
+
 
 #Q1.4.7
 
