@@ -84,7 +84,8 @@ c_omega_1= 5./9.
 c_omega_2=3./40.
 prand_omega=2.0
 prand_k=2.0
-cmu=0.09
+cmu=np.mean(cmu_ML)#0.09 # 
+#TODO here i inserted mean of is to just try a value
 
 small=1.e-10
 great=1.e10

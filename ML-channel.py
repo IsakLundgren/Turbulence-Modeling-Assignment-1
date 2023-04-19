@@ -105,8 +105,8 @@ print('starting SVR')
 
 # choose Machine Learning model
 #TODO change C value
-C=10
-eps=0.00001
+C=1
+eps=0.001
 # use Linear model
 #model = LinearSVR(epsilon = eps , C = C, max_iter=1000)
 model = SVR(kernel='rbf', epsilon = eps, C = C)
