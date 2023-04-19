@@ -27,6 +27,16 @@ niter=25000
 plt.rcParams.update({'font.size': 22})
 
 
+#TODO inserting the machine learned cmu
+from joblib import load
+
+folder = "./"
+filename = str(folder) + "model-svr.bin"
+model = load(tr(folder)+"model-svr.bin")
+scaler_dudy = load(str(folder)+"scalar-dudy-svr.bin")
+cmu_ML = np.loadtxt(str(folder)+"min-max-svr.txt")
+
+
 # friction velocity u_*=1
 # half channel width=1
 #
