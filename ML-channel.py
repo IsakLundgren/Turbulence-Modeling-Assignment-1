@@ -165,6 +165,6 @@ plt.savefig('scatter-cmu-vs-dudy-svr-and-test.png',bbox_inches='tight')
 
 #TODO save the model to export it to the CFD code
 dump(model, "model-svr.bin")
-dump(scaler_dudy, "scalar-dudy=svr.bin") 
+dump(scaler_dudy, "scalar-dudy-svr.bin") 
 np.savetxt("cmu-svr.txt", cmu_predict)
 

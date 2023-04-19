@@ -32,9 +32,9 @@ from joblib import load
 
 folder = "./"
 filename = str(folder) + "model-svr.bin"
-model = load(tr(folder)+"model-svr.bin")
+model = load(str(folder)+"model-svr.bin")
 scaler_dudy = load(str(folder)+"scalar-dudy-svr.bin")
-cmu_ML = np.loadtxt(str(folder)+"min-max-svr.txt")
+cmu_ML = np.loadtxt(str(folder)+"cmu-svr.txt")
 
 
 # friction velocity u_*=1
