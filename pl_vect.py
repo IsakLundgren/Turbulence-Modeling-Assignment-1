@@ -192,147 +192,153 @@ duvdy=dphidx(uv2d_face_w,uv2d_face_s,areawy,areasy,vol)
 
 omega2d=eps2d/k2d/0.09
 
-################################ vector plot
-fig2 = plt.figure()
-plt.subplots_adjust(left=0.20,top=0.80,bottom=0.20)
-k=6# plot every forth vector
-ss=3.2 #vector length
-plt.quiver(xp2d[::k,::k],yp2d[::k,::k],u2d[::k,::k],v2d[::k,::k],width=0.01)
-plt.xlabel("$x$")
-plt.ylabel("$y$")
-plt.title("vector plot")
-plt.savefig('vect_python.png')
+### Part 2 Machine learning
 
-################################ contour plot
-fig2 = plt.figure()
-plt.subplots_adjust(left=0.20,top=0.80,bottom=0.20)
-plt.pcolormesh(xp2d,yp2d,dudy, vmin=-5,vmax=5,cmap=plt.get_cmap('hot'),shading='gouraud')
-plt.colorbar()
-plt.xlabel("$x$")
-plt.ylabel("$y$")
-plt.title(r"the gradient $\partial \bar{v}_1/\partial x_2$")
-plt.savefig('dudy.png')
 
+
+
+
+# ################################ vector plot
+# fig2 = plt.figure()
+# plt.subplots_adjust(left=0.20,top=0.80,bottom=0.20)
+# k=6# plot every forth vector
+# ss=3.2 #vector length
+# plt.quiver(xp2d[::k,::k],yp2d[::k,::k],u2d[::k,::k],v2d[::k,::k],width=0.01)
+# plt.xlabel("$x$")
+# plt.ylabel("$y$")
+# plt.title("vector plot")
+# plt.savefig('vect_python.png')
+
+# ################################ contour plot
+# fig2 = plt.figure()
+# plt.subplots_adjust(left=0.20,top=0.80,bottom=0.20)
+# plt.pcolormesh(xp2d,yp2d,dudy, vmin=-5,vmax=5,cmap=plt.get_cmap('hot'),shading='gouraud')
+# plt.colorbar()
+# plt.xlabel("$x$")
+# plt.ylabel("$y$")
+# plt.title(r"the gradient $\partial \bar{v}_1/\partial x_2$")
+# plt.savefig('dudy.png')
+
+
+# # #************
+# # # plot uv
+# # fig2 = plt.figure()
+# # plt.subplots_adjust(left=0.20,top=0.80,bottom=0.20)
+# # i=10
+# # plt.plot(uv2d[i,:],yp2d[i,:],'b-')
+# # plt.xlabel('$\overline{u^\prime v^\prime}$')
+# # plt.ylabel('y/H')
+# # plt.savefig('uv_python.png')
 
 # #************
 # # plot uv
-# fig2 = plt.figure()
-# plt.subplots_adjust(left=0.20,top=0.80,bottom=0.20)
+# fig1,ax1 = plt.subplots()
+# plt.subplots_adjust(left=0.20,bottom=0.20)
 # i=10
-# plt.plot(uv2d[i,:],yp2d[i,:],'b-')
+# ax1.plot(uv2d[i,:],yp2d[i,:],'b-',label='i=1')
+# i=30
+# ax1.plot(uv2d[i,:],yp2d[i,:],'r-',label='i=30')
+# M = 2 # use only two major xticks
+# xticks = ticker.MaxNLocator(M)
+# ax1.xaxis.set_major_locator(xticks)
+# plt.legend(loc='best',prop=dict(size=13))
+# #ax1.yaxis.set_label_coords(-0.095, 0.6)
 # plt.xlabel('$\overline{u^\prime v^\prime}$')
 # plt.ylabel('y/H')
 # plt.savefig('uv_python.png')
 
-#************
-# plot uv
-fig1,ax1 = plt.subplots()
-plt.subplots_adjust(left=0.20,bottom=0.20)
-i=10
-ax1.plot(uv2d[i,:],yp2d[i,:],'b-',label='i=1')
-i=30
-ax1.plot(uv2d[i,:],yp2d[i,:],'r-',label='i=30')
-M = 2 # use only two major xticks
-xticks = ticker.MaxNLocator(M)
-ax1.xaxis.set_major_locator(xticks)
-plt.legend(loc='best',prop=dict(size=13))
-#ax1.yaxis.set_label_coords(-0.095, 0.6)
-plt.xlabel('$\overline{u^\prime v^\prime}$')
-plt.ylabel('y/H')
-plt.savefig('uv_python.png')
 
 
 
 
+# # Own plots
 
-# Own plots
+# ### R1.1  PLOTS OF REYNOLD SHEAR STRESS force per unit volume
+# # contour plot duvdx
+# fig2 = plt.figure()
+# plt.subplots_adjust(left=0.20,top=0.80,bottom=0.20)
+# plt.pcolormesh(xp2d,yp2d, duvdx)#, vmin=-5,vmax=5,cmap=plt.get_cmap('hot'),shading='gouraud')
+# plt.colorbar()
+# plt.xlabel("$x$")
+# plt.ylabel("$y/H$")
+# plt.title(r"the gradient $\partial \bar{v_1v_2}/\partial x_1$")
+# plt.savefig('duvdx.png')
 
-### R1.1  PLOTS OF REYNOLD SHEAR STRESS force per unit volume
-# contour plot duvdx
-fig2 = plt.figure()
-plt.subplots_adjust(left=0.20,top=0.80,bottom=0.20)
-plt.pcolormesh(xp2d,yp2d, duvdx)#, vmin=-5,vmax=5,cmap=plt.get_cmap('hot'),shading='gouraud')
-plt.colorbar()
-plt.xlabel("$x$")
-plt.ylabel("$y/H$")
-plt.title(r"the gradient $\partial \bar{v_1v_2}/\partial x_1$")
-plt.savefig('duvdx.png')
-
-# contour plot duvdy
-fig2 = plt.figure()
-plt.subplots_adjust(left=0.20,top=0.80,bottom=0.20)
-plt.pcolormesh(xp2d,yp2d, duvdy)#, vmin=-5,vmax=5,cmap=plt.get_cmap('hot'),shading='gouraud')
-plt.colorbar()
-plt.xlabel("$x$")
-plt.ylabel("$y/H$")
-plt.title(r"the gradient $\partial \bar{v\prime _1v\prime _2}/\partial x_2$")
-plt.savefig('duvdy.png')
-
-
-### R1.2, 1.1
-# Plot the stresses along two x1-locaitons
-i1 = 1; i2 = 20
-fig3 = plt.figure()
-plt.plot(duvdx[i1,:], yp2d[i1,:], label='x1=1') 
-plt.plot(duvdx[i2,:], yp2d[i2,:], label='x1=20')
-plt.xlabel(r"$\partial u{prime v\prime / \partial x$")
-plt.legend()
-plt.title(r'Shearstress at 2 x1')
-
-### R1.2,  1.2
-# plot all forces in the RANS eq.
-# duu_bar_dx, d2u_dx2, d2u_dy2, du_pm_dx (=dmean(u')^2_dx), dv_pm_dy (=dmean(v')^2_dy)
-
-# convective components: e.g. mean(u*u)
-duu_bar_dx = 2 * u2d*dudx 
-duv_bar_dx = u2d*dvdx + v2d*dudx
-duv_bar_dy = u2d*dvdy + v2d*dudy
-dvv_bar_dy = 2 * v2d*dvdy
-
-# viscous components
-dudx2d_face_w,dudx2d_face_s=compute_face_phi(dudx,fx,fy,ni,nj)
-dvdx2d_face_w,dvdx2d_face_s=compute_face_phi(dvdx,fx,fy,ni,nj)
-dudy2d_face_w,dudy2d_face_s=compute_face_phi(dudy,fx,fy,ni,nj)
-dvdy2d_face_w,dvdy2d_face_s=compute_face_phi(dvdy,fx,fy,ni,nj)
-
-d2u_dx2 = dphidx(dudx2d_face_w, dudx2d_face_s, areawx, areasx, vol)
-d2v_dx2 = dphidx(dvdx2d_face_w, dvdx2d_face_s, areawx, areasx, vol)
-d2u_dy2 = dphidx(dudy2d_face_w, dudy2d_face_s, areawy, areasy, vol)
-d2v_dy2 = dphidx(dvdy2d_face_w, dvdy2d_face_s, areawy, areasy, vol)
-
-# Plots of the component in the v_bar_1 equation
-fig4=plt.figure()
-plt.plot(duu_bar_dx[i1,:],  yp2d[i1,:], label='duu_bar_dx')
-plt.plot(duv_bar_dx[i1,:],  yp2d[i1,:], label='duv_bar_dx')
-plt.plot(duv_bar_dy[i1,:],  yp2d[i1,:], label='duv_bar_dy')
-plt.plot(dvv_bar_dy[i1,:],  yp2d[i1,:], label='dvv_bar_dy') # could prob omitt
-
-fig5 = plt.figure() # Components in order as equaiton
-plt.plot(dpdx[i1,:], yp2d[i1,:], label='dpdx')
-plt.plot(nu*d2u_dx2[i1,:], yp2d[i1,:], label='nu*d2u_dx2')
-plt.plot(duudx[i1,:], yp2d[i1,:], label='duu_dx')
-plt.plot(nu*d2u_dy2[i1,:], yp2d[i1,:], label='nu*d2u_dy2')
-plt.plot(duvdy[i1,:], yp2d[i1,:], label='duv_dy')
-plt.legend()
+# # contour plot duvdy
+# fig2 = plt.figure()
+# plt.subplots_adjust(left=0.20,top=0.80,bottom=0.20)
+# plt.pcolormesh(xp2d,yp2d, duvdy)#, vmin=-5,vmax=5,cmap=plt.get_cmap('hot'),shading='gouraud')
+# plt.colorbar()
+# plt.xlabel("$x$")
+# plt.ylabel("$y/H$")
+# plt.title(r"the gradient $\partial \bar{v\prime _1v\prime _2}/\partial x_2$")
+# plt.savefig('duvdy.png')
 
 
-fig1 = plt.figure()
-ax1 = fig1.add_subplot(111)
-#ax1.semilogx(data[:,1],data[:,2])
-plt.plot(dpdx[i1,:], yp2d[i1,:], label='dpdx')
-plt.plot(nu*d2u_dx2[i1,:], yp2d[i1,:], label='nu*d2u_dx2')
-plt.plot(duudx[i1,:], yp2d[i1,:], label='duu_dx')
-plt.plot(nu*d2u_dy2[i1,:], yp2d[i1,:], label='nu*d2u_dy2')
-plt.plot(duvdy[i1,:], yp2d[i1,:], label='duv_dy')
+# ### R1.2, 1.1
+# # Plot the stresses along two x1-locaitons
+# i1 = 1; i2 = 20
+# fig3 = plt.figure()
+# plt.plot(duvdx[i1,:], yp2d[i1,:], label='x1=1') 
+# plt.plot(duvdx[i2,:], yp2d[i2,:], label='x1=20')
+# plt.xlabel(r"$\partial u{prime v\prime / \partial x$")
+# plt.legend()
+# plt.title(r'Shearstress at 2 x1')
 
-ax2 = plt.axes([.65, .6, .2, .2], axisbg='y')
-plt.plot(dpdx[i1,0:0.2], yp2d[i1,0:0.2], label='dpdx')
-plt.plot(nu*d2u_dx2[i1,0:0.2], yp2d[i1,0:0.2], label='nu*d2u_dx2')
-plt.plot(duudx[i1,0:0.2], yp2d[i1,0:0.2], label='duu_dx')
-plt.plot(nu*d2u_dy2[i1,0:0.2], yp2d[i1,0:0.2], label='nu*d2u_dy2')
-plt.plot(duvdy[i1,0:0.2], yp2d[i1,0:0.2], label='duv_dy')
-plt.setp(ax2, xticks=[], yticks=[])
-plt.show
+# ### R1.2,  1.2
+# # plot all forces in the RANS eq.
+# # duu_bar_dx, d2u_dx2, d2u_dy2, du_pm_dx (=dmean(u')^2_dx), dv_pm_dy (=dmean(v')^2_dy)
+
+# # convective components: e.g. mean(u*u)
+# duu_bar_dx = 2 * u2d*dudx 
+# duv_bar_dx = u2d*dvdx + v2d*dudx
+# duv_bar_dy = u2d*dvdy + v2d*dudy
+# dvv_bar_dy = 2 * v2d*dvdy
+
+# # viscous components
+# dudx2d_face_w,dudx2d_face_s=compute_face_phi(dudx,fx,fy,ni,nj)
+# dvdx2d_face_w,dvdx2d_face_s=compute_face_phi(dvdx,fx,fy,ni,nj)
+# dudy2d_face_w,dudy2d_face_s=compute_face_phi(dudy,fx,fy,ni,nj)
+# dvdy2d_face_w,dvdy2d_face_s=compute_face_phi(dvdy,fx,fy,ni,nj)
+
+# d2u_dx2 = dphidx(dudx2d_face_w, dudx2d_face_s, areawx, areasx, vol)
+# d2v_dx2 = dphidx(dvdx2d_face_w, dvdx2d_face_s, areawx, areasx, vol)
+# d2u_dy2 = dphidx(dudy2d_face_w, dudy2d_face_s, areawy, areasy, vol)
+# d2v_dy2 = dphidx(dvdy2d_face_w, dvdy2d_face_s, areawy, areasy, vol)
+
+# # Plots of the component in the v_bar_1 equation
+# fig4=plt.figure()
+# plt.plot(duu_bar_dx[i1,:],  yp2d[i1,:], label='duu_bar_dx')
+# plt.plot(duv_bar_dx[i1,:],  yp2d[i1,:], label='duv_bar_dx')
+# plt.plot(duv_bar_dy[i1,:],  yp2d[i1,:], label='duv_bar_dy')
+# plt.plot(dvv_bar_dy[i1,:],  yp2d[i1,:], label='dvv_bar_dy') # could prob omitt
+
+# fig5 = plt.figure() # Components in order as equaiton
+# plt.plot(dpdx[i1,:], yp2d[i1,:], label='dpdx')
+# plt.plot(nu*d2u_dx2[i1,:], yp2d[i1,:], label='nu*d2u_dx2')
+# plt.plot(duudx[i1,:], yp2d[i1,:], label='duu_dx')
+# plt.plot(nu*d2u_dy2[i1,:], yp2d[i1,:], label='nu*d2u_dy2')
+# plt.plot(duvdy[i1,:], yp2d[i1,:], label='duv_dy')
+# plt.legend()
+
+
+# fig1 = plt.figure()
+# ax1 = fig1.add_subplot(111)
+# #ax1.semilogx(data[:,1],data[:,2])
+# plt.plot(dpdx[i1,:], yp2d[i1,:], label='dpdx')
+# plt.plot(nu*d2u_dx2[i1,:], yp2d[i1,:], label='nu*d2u_dx2')
+# plt.plot(duudx[i1,:], yp2d[i1,:], label='duu_dx')
+# plt.plot(nu*d2u_dy2[i1,:], yp2d[i1,:], label='nu*d2u_dy2')
+# plt.plot(duvdy[i1,:], yp2d[i1,:], label='duv_dy')
+
+# ax2 = plt.axes([.65, .6, .2, .2], axisbg='y')
+# plt.plot(dpdx[i1,0:0.2], yp2d[i1,0:0.2], label='dpdx')
+# plt.plot(nu*d2u_dx2[i1,0:0.2], yp2d[i1,0:0.2], label='nu*d2u_dx2')
+# plt.plot(duudx[i1,0:0.2], yp2d[i1,0:0.2], label='duu_dx')
+# plt.plot(nu*d2u_dy2[i1,0:0.2], yp2d[i1,0:0.2], label='nu*d2u_dy2')
+# plt.plot(duvdy[i1,0:0.2], yp2d[i1,0:0.2], label='duv_dy')
+# plt.setp(ax2, xticks=[], yticks=[])
+# plt.show
 
 
 
