@@ -428,9 +428,10 @@ if calcWallDist:
     Walldistance = np.zeros((ni,nj))
     for i in range(ni):
         for j in range(nj):
-            Distances = np.zeros(ni)
+            Distances = np.zeros((ni,2))
             for k in range(ni):
-                Distances[k] = np.sqrt((x2d[i,j]-x2d[k,1])**2 + (y2d[i,j]-y2d[k,1])**2)
+                Distances[k,0] = np.sqrt((x2d[i,j]-x2d[k,1])**2 + (y2d[i,j]-y2d[k,1])**2)
+                Distances[k,1] = np.sqrt((x2d[i,j]-x2d[k,nj-1])**2 + (y2d[i,j]-y2d[k,nj-1])**2)
             Walldistance[i,j] = np.min(Distances)
     
     # Write Walldistance vector to file
@@ -591,4 +592,5 @@ plt.ylabel("$y$")
 plt.title(r"Areas where reduction occurrs")
 plt.savefig('nut_reduction.png')
 
+plt.show(block=True)
 #TODO No areas with reduction
