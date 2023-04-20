@@ -35,6 +35,7 @@ filename = str(folder) + "model-svr.bin"
 model = load(str(folder)+"model-svr.bin")
 scaler_dudy = load(str(folder)+"scalar-dudy-svr.bin")
 dudy_min, dudy_max = np.loadtxt(str(folder)+"dudy-svr.txt")
+SVR = False
 
 
 # friction velocity u_*=1
@@ -44,7 +45,7 @@ dudy_min, dudy_max = np.loadtxt(str(folder)+"dudy-svr.txt")
 # create the grid
 
 nj=30 # coarse grid
-nj=98 # fine grid
+#nj=98 # fine grid
 njm1=nj-1
 #yfac=1.6 # coarse grid
 yfac=1.15 # fine grid
@@ -99,6 +100,7 @@ dn=np.zeros(nj)
 ds=np.zeros(nj)
 dy_s=np.zeros(nj)
 fy=np.zeros(nj)
+C_mu=np.ones(nj)
 tau_w=np.zeros(niter)
 k_iter=np.zeros(niter)
 om_iter=np.zeros(niter)
@@ -145,8 +147,7 @@ for n in range(1,niter):
 
 # compute turbulent viscosity
       vist_old=vist[j]
-      vist[j]=urf*k[j]/om[j]+(1.-urf)*vist_old
-
+      vist[j]=urf*C_mu[j]*k[j]/om[j]+(1.-urf)*vist_old
 
 # solve u
     for j in range(1,nj-1):
@@ -200,7 +201,13 @@ for n in range(1,niter):
 # solve k
     dudy=np.gradient(u,yp)
     dudy2=dudy**2
+# Update C_mu ##############WARNING might not be coupled properly, calculating C_mu for previous iteration
+    if(SVR):
+      dudy_clamped = np.zeros((nj,1))
+      dudy_clamped[:,0] = np.maximum(np.minimum(dudy,dudy_max),dudy_min)
+      C_mu = model.predict(dudy_clamped)
     for j in range(1,nj-1):
+
 
 # production term
       su[j]=vist[j]*dudy2[j]*delta_y[j]
@@ -279,15 +286,15 @@ for n in range(1,niter):
 uv=-vist*dudy
 
 DNS_mean=np.genfromtxt("LM_Channel_5200_mean_prof.dat",comments="%")
-y_DNS=DNS_mean[:,0];
-yplus_DNS=DNS_mean[:,1];
-u_DNS=DNS_mean[:,2];
+y_DNS=DNS_mean[:,0]
+yplus_DNS=DNS_mean[:,1]
+u_DNS=DNS_mean[:,2]
 
 DNS_stress=np.genfromtxt("LM_Channel_5200_vel_fluc_prof.dat",comments="%")
-u2_DNS=DNS_stress[:,2];
-v2_DNS=DNS_stress[:,3];
-w2_DNS=DNS_stress[:,4];
-uv_DNS=DNS_stress[:,5];
+u2_DNS=DNS_stress[:,2]
+v2_DNS=DNS_stress[:,3]
+w2_DNS=DNS_stress[:,4]
+uv_DNS=DNS_stress[:,5]
 
 
 k_DNS=0.5*(u2_DNS+v2_DNS+w2_DNS)
@@ -369,7 +376,7 @@ data[:,5]=uv
 data[:,6]=yc
 np.savetxt('yp_u_k_om_vist_uv_yc_PDH_5200.dat', data)
 
-
+plt.show(block=True)
 # #TODO testing CFD data
 # dudy=np.minimum(dudy,dudy_max)
 # dudy=np.maximum(dudy,dudy_min)
