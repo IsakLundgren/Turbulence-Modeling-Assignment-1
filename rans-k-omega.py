@@ -35,6 +35,7 @@ filename = str(folder) + "model-svr.bin"
 model = load(str(folder)+"model-svr.bin")
 scaler_dudy = load(str(folder)+"scalar-dudy-svr.bin")
 dudy_min, dudy_max = np.loadtxt(str(folder)+"dudy-svr.txt")
+SVR = True
 
 
 # friction velocity u_*=1
@@ -99,6 +100,7 @@ dn=np.zeros(nj)
 ds=np.zeros(nj)
 dy_s=np.zeros(nj)
 fy=np.zeros(nj)
+C_mu = np.zeros(nj)
 tau_w=np.zeros(niter)
 k_iter=np.zeros(niter)
 om_iter=np.zeros(niter)
@@ -145,7 +147,7 @@ for n in range(1,niter):
 
 # compute turbulent viscosity
       vist_old=vist[j]
-      vist[j]=urf*k[j]/om[j]+(1.-urf)*vist_old
+      vist[j]=urf*C_mu[j]*k[j]/om[j]+(1.-urf)*vist_old
 
 
 # solve u
@@ -200,6 +202,13 @@ for n in range(1,niter):
 # solve k
     dudy=np.gradient(u,yp)
     dudy2=dudy**2
+# Calculate new C_mu WARNING decoupled
+    if(SVR):
+      dudy_clamped = np.zeros((nj,1))
+      maximum = dudy_max * np.ones(nj)
+      minimum = dudy_min * np.ones(nj)
+      dudy_clamped[:,0] = np.maximum(np.minimum(dudy,maximum),minimum)
+      C_mu = model.predict(dudy_clamped)
     for j in range(1,nj-1):
 
 # production term
@@ -359,7 +368,7 @@ plt.ylabel('omega')
 plt.savefig('om_iter.png')
 
 # save data
-data=np.zeros((nj,7))
+data=np.zeros((nj,8))
 data[:,0]=yp
 data[:,1]=u
 data[:,2]=k
@@ -367,6 +376,7 @@ data[:,3]=om
 data[:,4]=vist
 data[:,5]=uv
 data[:,6]=yc
+data[:,7]=C_mu
 np.savetxt('yp_u_k_om_vist_uv_yc_PDH_5200.dat', data)
 
 
