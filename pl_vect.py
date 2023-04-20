@@ -510,8 +510,8 @@ uvB = -np.multiply(nu_t,(dudy + dvdx))
 vuB = uvB
 vvB = -np.multiply(nu_t,(dvdy + dvdy)) + 2/3 * k_RANS2d
 
-NormDiff11 = 2 * np.divide((uu2d-uuB),(uu2d+uuB))
-NormDiff12 = 2 * np.divide((uv2d-uvB),(uv2d+uvB))
+NormDiff11 = 2 * np.divide(np.abs(uu2d-uuB), np.abs(uu2d+uuB))
+NormDiff12 = 2 * np.divide(np.abs(uv2d-uvB), np.abs(uv2d+uvB)) 
 
 fig2 = plt.figure()
 plt.subplots_adjust(left=0.20,top=0.80,bottom=0.20)
