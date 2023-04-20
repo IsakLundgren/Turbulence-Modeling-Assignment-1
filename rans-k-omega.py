@@ -33,8 +33,8 @@ from joblib import load
 folder = "./"
 filename = str(folder) + "model-svr.bin"
 model = load(str(folder)+"model-svr.bin")
-scaler_dudy = load(str(folder)+"scalar-cmu-svr.bin")
-cmu_ML = np.loadtxt(str(folder)+"cmu-svr.txt")
+scaler_dudy = load(str(folder)+"scalar-dudy-svr.bin")
+dudy_min, dudy_max = np.loadtxt(str(folder)+"dudy-svr.txt")
 
 
 # friction velocity u_*=1
@@ -84,8 +84,7 @@ c_omega_1= 5./9.
 c_omega_2=3./40.
 prand_omega=2.0
 prand_k=2.0
-cmu=np.mean(cmu_ML)#0.09 # 
-#TODO here i inserted mean of is to just try a value
+cmu=0.09 
 
 small=1.e-10
 great=1.e10
@@ -369,4 +368,12 @@ data[:,4]=vist
 data[:,5]=uv
 data[:,6]=yc
 np.savetxt('yp_u_k_om_vist_uv_yc_PDH_5200.dat', data)
+
+
+#TODO testing CFD data
+dudy=np.minimum(dudy,dudy_max)
+dudy=np.maximum(dudy,dudy_min)
+
+
+
 
