@@ -370,9 +370,9 @@ data[:,6]=yc
 np.savetxt('yp_u_k_om_vist_uv_yc_PDH_5200.dat', data)
 
 
-#TODO testing CFD data
-dudy=np.minimum(dudy,dudy_max)
-dudy=np.maximum(dudy,dudy_min)
+# #TODO testing CFD data
+# dudy=np.minimum(dudy,dudy_max)
+# dudy=np.maximum(dudy,dudy_min)
 
 
 
