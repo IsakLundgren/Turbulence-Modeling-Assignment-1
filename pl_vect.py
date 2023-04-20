@@ -561,7 +561,7 @@ nu_tReduction = np.zeros([ni,nj])
 for i in range(ni):
    for j in range(nj):
       SEig[i,j,:] = np.linalg.eigvals([[s11[i,j],s12[i,j]],[s21[i,j],s22[i,j]]])
-      nu_tReduction = nu_t > k_RANS2d[i,j] / (3 * np.abs(np.max(SEig[i,j,:])))
+      nu_tReduction[i,j] = nu_t[i,j] > k_RANS2d[i,j] / (3 * np.abs(np.max(SEig[i,j,:])))
 
 fig2 = plt.figure()
 plt.subplots_adjust(left=0.20,top=0.80,bottom=0.20)
