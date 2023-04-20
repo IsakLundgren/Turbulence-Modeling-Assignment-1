@@ -33,7 +33,7 @@ from joblib import load
 folder = "./"
 filename = str(folder) + "model-svr.bin"
 model = load(str(folder)+"model-svr.bin")
-scaler_dudy = load(str(folder)+"scalar-dudy-svr.bin")
+scaler_dudy = load(str(folder)+"scalar-cmu-svr.bin")
 cmu_ML = np.loadtxt(str(folder)+"cmu-svr.txt")
 
 

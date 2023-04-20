@@ -105,8 +105,8 @@ print('starting SVR')
 
 # choose Machine Learning model
 #TODO change C value
-C=1
-eps=0.001
+C=0.3
+eps=0.0001
 # use Linear model
 #model = LinearSVR(epsilon = eps , C = C, max_iter=1000)
 model = SVR(kernel='rbf', epsilon = eps, C = C)
@@ -165,6 +165,6 @@ plt.savefig('scatter-cmu-vs-dudy-svr-and-test.png',bbox_inches='tight')
 
 #TODO save the model to export it to the CFD code
 dump(model, "model-svr.bin")
-dump(scaler_dudy, "scalar-dudy-svr.bin") 
+dump(scaler_dudy, "scalar-cmu-svr.bin") 
 np.savetxt("cmu-svr.txt", cmu_predict)
 
