@@ -35,7 +35,7 @@ filename = str(folder) + "model-svr.bin"
 model = load(str(folder)+"model-svr.bin")
 scaler_dudy = load(str(folder)+"scalar-dudy-svr.bin")
 dudy_min, dudy_max = np.loadtxt(str(folder)+"dudy-svr.txt")
-SVR = True
+SVR = False
 
 
 # friction velocity u_*=1
@@ -44,8 +44,8 @@ SVR = True
 
 # create the grid
 
-nj=30 # coarse grid
-#nj=98 # fine grid
+#nj=30 # coarse grid
+nj=98 # fine grid
 njm1=nj-1
 #yfac=1.6 # coarse grid
 yfac=1.15 # fine grid
