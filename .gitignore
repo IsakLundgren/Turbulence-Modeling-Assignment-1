@@ -3,3 +3,5 @@
 *.txt
 *.bin
 __pycache__
+model-svr.bin
+scalar-dudy-svr.bin
