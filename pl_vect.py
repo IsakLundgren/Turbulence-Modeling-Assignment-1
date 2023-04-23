@@ -1,3 +1,7 @@
+"""
+Header
+"""
+
 import scipy.io as sio
 import numpy as np
 import sys
@@ -6,6 +10,8 @@ import os
 #import gradients.py
 from gradients import compute_face_phi,dphidx,dphidy,init
 plt.rcParams.update({'font.size': 22})
+import matplotlib.ticker as mtick
+from matplotlib import ticker
 
 plt.interactive(True)
 
@@ -175,6 +181,8 @@ UU2d_face_w,UU2d_face_s=compute_face_phi(u2d**2,fx,fy,ni,nj)
 VV2d_face_w,VV2d_face_s=compute_face_phi(v2d**2,fx,fy,ni,nj)
 UV2d_face_w,UV2d_face_s=compute_face_phi(np.multiply(u2d,v2d),fx,fy,ni,nj)
 p2d_face_w,p2d_face_s=compute_face_phi(p2d,fx,fy,ni,nj)
+uu2d_face_w,uu2d_face_s=compute_face_phi(uu2d,fx,fy,ni,nj)
+uv2d_face_w,uv2d_face_s=compute_face_phi(uv2d,fx,fy,ni,nj)
 uv2d_face_w,uv2d_face_s=compute_face_phi(uv2d,fx,fy,ni,nj) # reynolds components
 uu2d_face_w,uu2d_face_s=compute_face_phi(uu2d,fx,fy,ni,nj) # Turbulent kinetic energy x
 vv2d_face_w,vv2d_face_s=compute_face_phi(vv2d,fx,fy,ni,nj) # Turbulent kinetic energy y
@@ -183,6 +191,8 @@ vv2d_face_w,vv2d_face_s=compute_face_phi(vv2d,fx,fy,ni,nj) # Turbulent kinetic e
 dudx=dphidx(u2d_face_w,u2d_face_s,areawx,areasx,vol)
 dvdx=dphidx(v2d_face_w,v2d_face_s,areawx,areasx,vol)
 dpdx=dphidx(p2d_face_w,p2d_face_s,areawx,areasx,vol)
+duudx=dphidx(uu2d_face_w,uu2d_face_s,areawx,areasx,vol)
+duvdx=dphidx(uv2d_face_w,uv2d_face_s,areawx,areasx,vol)
 dUUdx=dphidx(UU2d_face_w,UU2d_face_s,areawx,areasx,vol)
 dUVdx=dphidx(UV2d_face_w,UV2d_face_s,areawx,areasx,vol)
 duvdx = dphidx(uv2d_face_w,uv2d_face_s,areawx,areasx,vol) # reynolds stressesx-dir
