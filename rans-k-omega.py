@@ -1,6 +1,7 @@
 import scipy.io as sio
 import numpy as np
 import sys
+from sklearn.preprocessing import StandardScaler
 import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 #from tdma import tdma
@@ -22,7 +23,7 @@ plt.close('all')
 # http://www.tfd.chalmers.se/~lada/comp_fluid_dynamics/
 
 # max number of iterations
-niter=25000
+niter=5000
 
 plt.rcParams.update({'font.size': 22})
 
@@ -30,7 +31,7 @@ plt.rcParams.update({'font.size': 22})
 #TODO inserting the machine learned cmu
 from joblib import load
 
-VistModel = True
+VistModel = False
 
 folder = "./"
 
@@ -232,7 +233,7 @@ for n in range(1,niter):
             maximum = dudy_max * np.ones(nj)
             minimum = dudy_min * np.ones(nj)
             dudy_clamped[:,0] = np.maximum(np.minimum(dudy,maximum),minimum)
-            C_mu = model.predict(dudy_clamped)
+            C_mu = model.predict(scaler_dudy.transform(dudy_clamped))
          
     for j in range(1,nj-1):
 
