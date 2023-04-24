@@ -46,7 +46,7 @@ else:
       scaler_dudy = load(str(folder)+"scalar-dudy-svr.bin")
       dudy_min, dudy_max = np.loadtxt(str(folder)+"dudy-svr.txt")
 
-SVR = False
+SVR = True
 
 
 # friction velocity u_*=1
@@ -55,11 +55,11 @@ SVR = False
 
 # create the grid
 
-#nj=30 # coarse grid
-nj=98 # fine grid
+nj=30 # coarse grid
+#nj=98 # fine grid
 njm1=nj-1
-#yfac=1.6 # coarse grid
-yfac=1.15 # fine grid
+yfac=1.6 # coarse grid
+#yfac=1.15 # fine grid
 dy=0.1
 yc=np.zeros(nj)
 delta_y=np.zeros(nj)
@@ -223,7 +223,10 @@ for n in range(1,niter):
             maximum = vist_max * np.ones(nj)
             minimum = vist_min * np.ones(nj)
             vist_clamped[:,0] = np.maximum(np.minimum(vist,maximum),minimum)
-            C_mu = model.predict(dudy_clamped)
+            model_input = np.zeros((nj,2))
+            model_input[:,0] = dudy_clamped[:,0]
+            model_input[:,1] = vist_clamped[:,0]
+            C_mu = model.predict(model_input)
       else:
             dudy_clamped = np.zeros((nj,1))
             maximum = dudy_max * np.ones(nj)
