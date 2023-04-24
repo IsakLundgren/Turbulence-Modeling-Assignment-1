@@ -142,20 +142,14 @@ print('\nRMS error using ML turbulence model',uv_error)
 cmu_predict = np.divide(uv_predict,np.multiply(X_test[:,0],X_test[:,1]))
 cmu_out_test = np.divide(uv_out_test,np.multiply(X_test[:,0],X_test[:,1]))
 
-# make predictions on test data
-dudy_test=scaler_dudy.transform(dudy_test)
-vist_test=scaler_vist.transform(vist_test)
-X_test=np.hstack((dudy_test,vist_test))
-y_test_pred=svr.predict(X_test)
-
 # plot predicted vs true values
 fig, ax = plt.subplots(figsize=(10,10))
-ax.scatter(uv_out_test, y_test_pred)
+ax.scatter(uv_out_test, uv_predict)
 ax.plot(ax.get_xlim(), ax.get_ylim(), ls="--", c=".3")
 ax.set_xlabel('True Values')
 ax.set_ylabel('Predicted Values')
 ax.set_title('SVR Model Performance')
-plt.show()
+plt.show(block=True)
 
 #TODO save the model to export it to the CFD code
 dump(model, "nut-model-svr.bin")

@@ -30,11 +30,22 @@ plt.rcParams.update({'font.size': 22})
 #TODO inserting the machine learned cmu
 from joblib import load
 
+VistModel = True
+
 folder = "./"
-filename = str(folder) + "model-svr.bin"
-model = load(str(folder)+"model-svr.bin")
-scaler_dudy = load(str(folder)+"scalar-dudy-svr.bin")
-dudy_min, dudy_max = np.loadtxt(str(folder)+"dudy-svr.txt")
+
+if VistModel:
+      filename = str(folder) + "model-svr.bin"
+      model = load(str(folder)+"nut-model-svr.bin")
+      scaler_dudy = load(str(folder)+"nut-scalar-dudy-svr.bin")
+      scaler_vist = load(str(folder)+"nut-scalar-vist-svr.bin")
+      dudy_min, dudy_max, vist_min, vist_max = np.loadtxt(str(folder)+"vist-svr.txt")
+else:
+      filename = str(folder) + "model-svr.bin"
+      model = load(str(folder)+"model-svr.bin")
+      scaler_dudy = load(str(folder)+"scalar-dudy-svr.bin")
+      dudy_min, dudy_max = np.loadtxt(str(folder)+"dudy-svr.txt")
+
 SVR = False
 
 
@@ -203,11 +214,23 @@ for n in range(1,niter):
     dudy2=dudy**2
 # Calculate new C_mu WARNING decoupled
     if(SVR):
-      dudy_clamped = np.zeros((nj,1))
-      maximum = dudy_max * np.ones(nj)
-      minimum = dudy_min * np.ones(nj)
-      dudy_clamped[:,0] = np.maximum(np.minimum(dudy,maximum),minimum)
-      C_mu = model.predict(dudy_clamped)
+      if(VistModel):
+            dudy_clamped = np.zeros((nj,1))
+            maximum = dudy_max * np.ones(nj)
+            minimum = dudy_min * np.ones(nj)
+            dudy_clamped[:,0] = np.maximum(np.minimum(dudy,maximum),minimum)
+            vist_clamped = np.zeros((nj,1))
+            maximum = vist_max * np.ones(nj)
+            minimum = vist_min * np.ones(nj)
+            vist_clamped[:,0] = np.maximum(np.minimum(vist,maximum),minimum)
+            C_mu = model.predict(dudy_clamped)
+      else:
+            dudy_clamped = np.zeros((nj,1))
+            maximum = dudy_max * np.ones(nj)
+            minimum = dudy_min * np.ones(nj)
+            dudy_clamped[:,0] = np.maximum(np.minimum(dudy,maximum),minimum)
+            C_mu = model.predict(dudy_clamped)
+         
     for j in range(1,nj-1):
 
 
