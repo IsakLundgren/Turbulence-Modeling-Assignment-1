@@ -59,7 +59,14 @@ cmu_all_data=cmu_DNS
 
 # input dudy
 dudy_all_data=dudy_DNS
-uv_all_data = uv_DNS
+Lm = np.zeros(len(y_DNS)) 
+
+# mixing length 
+for i in range(len(y_DNS)):
+    if y_DNS[i] > max(y_DNS)/2:
+        Lm[i] = y_DNS[-i]
+    else:
+        Lm[i] = y_DNS[i]
 
 #TODO here the higher values of the stress are chosen for the turbulent boundary layer
 # choose values for 30 < y+ < 1000
