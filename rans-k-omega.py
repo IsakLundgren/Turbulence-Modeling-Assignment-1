@@ -219,7 +219,9 @@ for n in range(1,niter):
             dudy_clamped = np.zeros((nj,1))
             maximum = dudy_max * np.ones(nj)
             minimum = dudy_min * np.ones(nj)
-            dudy_clamped[:,0] = np.maximum(np.minimum(dudy,maximum),minimum)
+            #Since model is only trained on positive test data, take absolute value of dudy. 
+            #Since C_mu positive both in positive and negative dudy, this should make sense
+            dudy_clamped[:,0] = np.maximum(np.minimum(np.abs(dudy),maximum),minimum) 
             vist_clamped = np.zeros((nj,1))
             maximum = vist_max * np.ones(nj)
             minimum = vist_min * np.ones(nj)

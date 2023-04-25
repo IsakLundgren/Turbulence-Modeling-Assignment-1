@@ -62,8 +62,8 @@ vist_all_data = vist_DNS
 index_choose=np.nonzero((yplus_DNS > 30 )  & (yplus_DNS< 1000 ))
 yplus_DNS=yplus_DNS[index_choose]
 dudy_all_data= dudy_all_data[index_choose]
-uv_all_data = uv_all_data[index_choose]
 vist_all_data = vist_all_data[index_choose]
+uv_all_data = uv_all_data[index_choose]
 #  ....... do this for all varibles
 
 # create indices for all data
@@ -151,6 +151,7 @@ ax.plot(ax.get_xlim(), ax.get_ylim(), ls="--", c=".3")
 ax.set_xlabel('True Values')
 ax.set_ylabel('Predicted Values')
 ax.set_title('SVR Model Performance')
+plt.show(block=True)
 
 #Plot C_mu to dudy and vist
 fig, ax = plt.subplots(figsize=(10,10))
