@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import os
 #import gradients.py
 from gradients import compute_face_phi,dphidx,dphidy,init
-plt.rcParams.update({'font.size': 22})
+plt.rcParams.update({'font.size': 20})
 import matplotlib.ticker as mtick
 from matplotlib import ticker
 
@@ -520,8 +520,8 @@ uvB = -np.multiply(nu_t,(dudy + dvdx))
 vuB = uvB
 vvB = -np.multiply(nu_t,(dvdy + dvdy)) + 2/3 * k_RANS2d
 
-NormDiff11 = 2 * np.divide(np.abs(uu2d-uuB), np.abs(uu2d+uuB))
-NormDiff12 = 2 * np.divide(np.abs(uv2d-uvB), np.abs(uv2d+uvB)) 
+NormDiff11 = np.abs(uu2d-uuB)
+NormDiff12 = np.abs(uv2d-uvB) 
 
 fig2 = plt.figure()
 plt.subplots_adjust(left=0.20,top=0.80,bottom=0.20)
@@ -529,7 +529,8 @@ plt.pcolormesh(xp2d,yp2d,NormDiff11)
 plt.colorbar()
 plt.xlabel("$x$")
 plt.ylabel("$y$")
-plt.title(r"Normalized difference 11 term")
+plt.ylim(top=0.05)
+plt.title(r"Difference 11 term")
 plt.savefig('BoussinesqComp11.png')
 
 fig2 = plt.figure()
@@ -538,7 +539,8 @@ plt.pcolormesh(xp2d,yp2d,NormDiff12)
 plt.colorbar()
 plt.xlabel("$x$")
 plt.ylabel("$y$")
-plt.title(r"Normalized difference 12 term")
+plt.ylim(top=0.05)
+plt.title(r"Difference 12 term")
 plt.savefig('BoussinesqComp12.png')
 
 
