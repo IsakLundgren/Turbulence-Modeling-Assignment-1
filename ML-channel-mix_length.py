@@ -50,32 +50,26 @@ omega_DNS=(eps_DNS/0.09/vist_DNS)**0.5
 
 
 # turbulence model: uv = -cmu*k/omega*dudy => cmu=-uv/(k*dudy)*omega
-# Input data: dudy
-# output, to be predicted: cmu. interpolate to k-omega grid
-cmu_DNS=-uv_DNS/(k_DNS*dudy_DNS)*omega_DNS
-# fix cmu at the wall
-cmu_DNS[0]=1
-cmu_all_data=cmu_DNS
+# Input data: abs(dudy), L_m
+dudy_all_data = np.abs(dudy_DNS)
+L_m_all_data = y_DNS
 
-# input dudy
-dudy_all_data=dudy_DNS
-Lm_all = y_DNS
-
+# output, to be predicted: f_m
+f_m_all_data = np.divide(vist_DNS,np.multiply(L_m_all_data**2, dudy_all_data))
 
 #TODO here the higher values of the stress are chosen for the turbulent boundary layer
 # choose values for 30 < y+ < 1000
 index_choose=np.nonzero((yplus_DNS > 30 )  & (yplus_DNS< 1000 ))
 yplus_DNS=yplus_DNS[index_choose]
-dudy_all_data= dudy_all_data[index_choose]
-cmu_all_data = cmu_all_data[index_choose]
-Lm_all= Lm_all[index_choose]
-#  ....... do this for all varibles
+dudy_all_data = dudy_all_data[index_choose]
+L_m_all_data = L_m_all_data[index_choose]
+f_m_all_data = f_m_all_data[index_choose]
 
 # create indices for all data
-index= np.arange(0,len(cmu_all_data), dtype=int)
+index= np.arange(0,len(f_m_all_data), dtype=int)
 
 # number of elements of test data, 20%
-n_test=int(0.2*len(cmu_all_data))
+n_test=int(0.2*len(f_m_all_data))
 
 # pick 20% elements randomly (test data)
 index_test=np.random.choice(index, size=n_test, replace=False)
@@ -83,32 +77,38 @@ index_test=np.random.choice(index, size=n_test, replace=False)
 #index_test=index[::5]
 
 dudy_test=dudy_all_data[index_test]
-cmu_out_test=cmu_all_data[index_test]
+L_m_test = L_m_all_data[index_test]
+f_m_out_test=f_m_all_data[index_test]
 n_test=len(dudy_test)
 
 # delete testing data from 'all data' => training data
 dudy_in=np.delete(dudy_all_data,index_test)
-cmu_out=np.delete(cmu_all_data,index_test)
-n_svr=len(cmu_out)
+L_m_in = np.delete(L_m_all_data,index_test)
+f_m_out=np.delete(f_m_all_data,index_test)
+n_svr=len(f_m_out)
 
 # re-shape
 dudy_in=dudy_in.reshape(-1, 1)
+L_m_in = L_m_in.reshape(-1, 1)
 
 # scale input data 
 scaler_dudy=StandardScaler()
+scaler_L_m=StandardScaler()
 dudy_in=scaler_dudy.fit_transform(dudy_in)
+L_m_in=scaler_L_m.fit_transform(L_m_in)
 
 # setup X (input) and y (output)
-X=np.zeros((n_svr,1))
-y=cmu_out
+X=np.zeros((n_svr,2))
+y=f_m_out
 X[:,0]=dudy_in[:,0]
+X[:,1]=L_m_in[:,0]
 
 print('starting SVR')
 
 # choose Machine Learning model
 #TODO change C value
-C=2
-eps=0.0001
+C=1e+3
+eps=1e-4
 # use Linear model
 #model = LinearSVR(epsilon = eps , C = C, max_iter=1000)
 model = SVR(kernel='rbf', epsilon = eps, C = C)
@@ -118,56 +118,34 @@ svr = model.fit(X, y.flatten())
 
 #  re-shape test data
 dudy_test=dudy_test.reshape(-1, 1)
+L_m_test = L_m_test.reshape(-1, 1)
 
 # scale test data
 dudy_test=scaler_dudy.transform(dudy_test)
+L_m_test=scaler_dudy.transform(L_m_test)
 
 # setup X (input) for testing (predicting)
-X_test=np.zeros((n_test,1))
+X_test=np.zeros((n_test,2))
 X_test[:,0]=dudy_test[:,0]
+X_test[:,1]=L_m_test[:,0]
 
 # predict cmu
-cmu_predict= model.predict(X_test)
+f_m_predict= model.predict(X_test)
 
 # find difference between ML prediction and target
-cmu_error=np.std(cmu_predict-cmu_out_test)/\
-(np.mean(cmu_predict**2))**0.5
-print('\nRMS error using ML turbulence model',cmu_error)
+f_m_error=np.std(f_m_predict-f_m_out_test)/\
+(np.mean(f_m_predict**2))**0.5
+print('\nRMS error using ML turbulence model',f_m_error)
 
-################### 2D scatter top view plot all points, both test and y_svr
-fig1,ax1 = plt.subplots()
-plt.subplots_adjust(left=0.20,bottom=0.20)
-ax=plt.gca()
-
-# plot all points
-plt.scatter(scaler_dudy.inverse_transform(dudy_test), cmu_out_test,marker='o', s=20.2,c='green',label='target')
-#plt.scatter(scaler_dudy.inverse_transform(dudy_test), cmu_predict,marker='o', s=20.2,c='blue',label='predicted')
-
-#label axes
-ax.set_ylabel(r'$C_\mu$')
-plt.xlabel('$\partial U^+/\partial y$')
-plt.axis([0,2500,0,1.1])
-plt.legend(loc="upper left",prop=dict(size=12))
-
-axins1 = inset_axes(ax1, width="50%", height="50%", loc='upper right', borderpad=0.1)
-# reduce fotnsize 
-axins1.tick_params(axis = 'both', which = 'major', labelsize = 10)
-plt.scatter(scaler_dudy.inverse_transform(dudy_test), cmu_out_test,marker='o', s=20.2,c='green')
-plt.scatter(scaler_dudy.inverse_transform(dudy_test), cmu_predict,marker='o', s=20.2,c='blue')
-axins1.yaxis.set_label_position("left")
-axins1.yaxis.tick_left()
-axins1.xaxis.set_label_position("bottom")
-axins1.xaxis.tick_bottom()
-plt.ylabel("$C_\mu$")
-plt.xlabel("$\partial U^+/\partial y$")
-plt.axis([0, 100, 0.4,1])
+# plot predicted vs true values
+fig, ax = plt.subplots(figsize=(10,10))
+ax.scatter(f_m_out_test, f_m_predict)
+ax.plot(ax.get_xlim(), ax.get_ylim(), ls="--", c=".3")
+ax.set_xlabel('True Values')
+ax.set_ylabel('Predicted Values')
+ax.set_title('SVR Model Performance')
+plt.show(block=True)
 
 
 plt.savefig('scatter-cmu-vs-dudy-svr-and-test.png',bbox_inches='tight')
-
-
-#TODO save the model to export it to the CFD code
-dump(model, "model-svr.bin")
-dump(scaler_dudy, "scalar-dudy-svr.bin") 
-np.savetxt("dudy-svr.txt", [min(dudy_DNS), max(dudy_DNS)])
 
