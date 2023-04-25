@@ -175,6 +175,7 @@ v2d_face_w,v2d_face_s=compute_face_phi(v2d,fx,fy,ni,nj)
 p2d_face_w,p2d_face_s=compute_face_phi(p2d,fx,fy,ni,nj)
 uu2d_face_w,uu2d_face_s=compute_face_phi(uu2d,fx,fy,ni,nj)
 uv2d_face_w,uv2d_face_s=compute_face_phi(uv2d,fx,fy,ni,nj)
+vv2d_face_w,vv2d_face_s=compute_face_phi(vv2d,fx,fy,ni,nj)
 
 # x derivatives
 dudx=dphidx(u2d_face_w,u2d_face_s,areawx,areasx,vol)
@@ -184,11 +185,12 @@ duudx=dphidx(uu2d_face_w,uu2d_face_s,areawx,areasx,vol)
 duvdx=dphidx(uv2d_face_w,uv2d_face_s,areawx,areasx,vol)
 
 # y derivatives
-dudy=dphidx(u2d_face_w,u2d_face_s,areawy,areasy,vol)
-dvdy=dphidx(v2d_face_w,v2d_face_s,areawy,areasy,vol)
-dpdy=dphidx(p2d_face_w,p2d_face_s,areawy,areasy,vol)
-duudy=dphidx(uu2d_face_w,uu2d_face_s,areawy,areasy,vol)
-duvdy=dphidx(uv2d_face_w,uv2d_face_s,areawy,areasy,vol)
+dudy=dphidy(u2d_face_w,u2d_face_s,areawy,areasy,vol)
+dvdy=dphidy(v2d_face_w,v2d_face_s,areawy,areasy,vol)
+dpdy=dphidy(p2d_face_w,p2d_face_s,areawy,areasy,vol)
+duudy=dphidy(uu2d_face_w,uu2d_face_s,areawy,areasy,vol)
+duvdy=dphidy(uv2d_face_w,uv2d_face_s,areawy,areasy,vol)
+dvvdy=dphidy(vv2d_face_w,vv2d_face_s,areawy,areasy,vol)
 
 omega2d=eps2d/k2d/0.09
 
@@ -253,6 +255,8 @@ omega2d=eps2d/k2d/0.09
 
 # # Own plots
 
+i1 = 1; i2 = 20
+
 # ### R1.1  PLOTS OF REYNOLD SHEAR STRESS force per unit volume
 # # contour plot duvdx
 # fig2 = plt.figure()
@@ -261,7 +265,7 @@ omega2d=eps2d/k2d/0.09
 # plt.colorbar()
 # plt.xlabel("$x$")
 # plt.ylabel("$y/H$")
-# plt.title(r"the gradient $\partial \bar{v_1v_2}/\partial x_1$")
+# plt.title(r"Shear stress grad. $\frac{\partial \overline{u'v'}}{\partial x_1}$")
 # plt.savefig('duvdx.png')
 
 # # contour plot duvdy
@@ -271,55 +275,100 @@ omega2d=eps2d/k2d/0.09
 # plt.colorbar()
 # plt.xlabel("$x$")
 # plt.ylabel("$y/H$")
-# plt.title(r"the gradient $\partial \bar{v\prime _1v\prime _2}/\partial x_2$")
+# plt.title(r"Shear stress grad. $\frac{\partial \overline{u'v'}}{\partial x_2}$")
 # plt.savefig('duvdy.png')
 
 
+
+
+
+
 # ### R1.2, 1.1
-# # Plot the stresses along two x1-locaitons
-# i1 = 1; i2 = 20
+# # Plot the stresses from RANS along two x1-locaitons
 # fig3 = plt.figure()
-# plt.plot(duvdx[i1,:], yp2d[i1,:], label='x1=1') 
-# plt.plot(duvdx[i2,:], yp2d[i2,:], label='x1=20')
+# plt.plot(-duvdx[i1,:100], yp2d[i1,:100], label='Inlet') 
+# plt.plot(-duvdx[i2,:100], yp2d[i2,:100], label='Recirc.')
 # plt.xlabel(r"$\partial u{prime v\prime / \partial x$")
 # plt.legend()
-# plt.title(r'Shearstress at 2 x1')
+# plt.title(r"Shear stresses $\frac{\partial \overline{u'v'}}{\partial x_1}$")
+# plt.xlabel(r"$\frac{\partial \overline{u'v'}}{\partial x_1}$")
+# plt.ylabel('y/H')
+# plt.grid()
+# plt.savefig('R1_1_shearstress_x1.png')
 
-# ### R1.2,  1.2
-# # plot all forces in the RANS eq.
-# # duu_bar_dx, d2u_dx2, d2u_dy2, du_pm_dx (=dmean(u')^2_dx), dv_pm_dy (=dmean(v')^2_dy)
-
-# # convective components: e.g. mean(u*u)
-# duu_bar_dx = 2 * u2d*dudx 
-# duv_bar_dx = u2d*dvdx + v2d*dudx
-# duv_bar_dy = u2d*dvdy + v2d*dudy
-# dvv_bar_dy = 2 * v2d*dvdy
-
-# # viscous components
-# dudx2d_face_w,dudx2d_face_s=compute_face_phi(dudx,fx,fy,ni,nj)
-# dvdx2d_face_w,dvdx2d_face_s=compute_face_phi(dvdx,fx,fy,ni,nj)
-# dudy2d_face_w,dudy2d_face_s=compute_face_phi(dudy,fx,fy,ni,nj)
-# dvdy2d_face_w,dvdy2d_face_s=compute_face_phi(dvdy,fx,fy,ni,nj)
-
-# d2u_dx2 = dphidx(dudx2d_face_w, dudx2d_face_s, areawx, areasx, vol)
-# d2v_dx2 = dphidx(dvdx2d_face_w, dvdx2d_face_s, areawx, areasx, vol)
-# d2u_dy2 = dphidx(dudy2d_face_w, dudy2d_face_s, areawy, areasy, vol)
-# d2v_dy2 = dphidx(dvdy2d_face_w, dvdy2d_face_s, areawy, areasy, vol)
-
-# # Plots of the component in the v_bar_1 equation
-# fig4=plt.figure()
-# plt.plot(duu_bar_dx[i1,:],  yp2d[i1,:], label='duu_bar_dx')
-# plt.plot(duv_bar_dx[i1,:],  yp2d[i1,:], label='duv_bar_dx')
-# plt.plot(duv_bar_dy[i1,:],  yp2d[i1,:], label='duv_bar_dy')
-# plt.plot(dvv_bar_dy[i1,:],  yp2d[i1,:], label='dvv_bar_dy') # could prob omitt
-
-# fig5 = plt.figure() # Components in order as equaiton
-# plt.plot(dpdx[i1,:], yp2d[i1,:], label='dpdx')
-# plt.plot(nu*d2u_dx2[i1,:], yp2d[i1,:], label='nu*d2u_dx2')
-# plt.plot(duudx[i1,:], yp2d[i1,:], label='duu_dx')
-# plt.plot(nu*d2u_dy2[i1,:], yp2d[i1,:], label='nu*d2u_dy2')
-# plt.plot(duvdy[i1,:], yp2d[i1,:], label='duv_dy')
+# fig3 = plt.figure()
+# plt.plot(-duvdy[i1,:100], yp2d[i1,:100], label='Inlet') 
+# plt.plot(-duvdy[i2,:100], yp2d[i2,:100], label='Recirc.')
+# plt.xlabel(r"$\partial u{prime v\prime / \partial x$")
 # plt.legend()
+# #plt.title(r'Shearstress at 2 x1')
+# plt.title(r"Shear stresses $\frac{\partial \overline{u'v'}}{\partial x_2}$")
+# plt.xlabel(r"$\frac{\partial \overline{u'v'}}{\partial x_2}$")
+# plt.ylabel('y/H')
+# plt.grid()
+# plt.savefig('R1_1_shearstress_x2.png')
+
+
+
+
+### R1.2,  1.2
+# plot all forces in the RANS eq.
+# duu_bar_dx, d2u_dx2, d2u_dy2, du_pm_dx (=dmean(u')^2_dx), dv_pm_dy (=dmean(v')^2_dy)
+
+# convective components: e.g. mean(u*u)
+duu_bar_dx = 2 * u2d*dudx 
+duv_bar_dx = u2d*dvdx + v2d*dudx
+duv_bar_dy = u2d*dvdy + v2d*dudy
+dvv_bar_dy = 2 * v2d*dvdy
+
+# viscous components
+dudx2d_face_w,dudx2d_face_s=compute_face_phi(dudx,fx,fy,ni,nj)
+dvdx2d_face_w,dvdx2d_face_s=compute_face_phi(dvdx,fx,fy,ni,nj)
+dudy2d_face_w,dudy2d_face_s=compute_face_phi(dudy,fx,fy,ni,nj)
+dvdy2d_face_w,dvdy2d_face_s=compute_face_phi(dvdy,fx,fy,ni,nj)
+
+d2u_dx2 = dphidx(dudx2d_face_w, dudx2d_face_s, areawx, areasx, vol)
+d2v_dx2 = dphidx(dvdx2d_face_w, dvdx2d_face_s, areawx, areasx, vol)
+d2u_dy2 = dphidx(dudy2d_face_w, dudy2d_face_s, areawy, areasy, vol)
+d2v_dy2 = dphidx(dvdy2d_face_w, dvdy2d_face_s, areawy, areasy, vol)
+
+# Plots of the component in the v_bar_1 equation
+small = 150
+large = 100
+i1 = 1
+
+fig4=plt.figure()
+plt.plot(duu_bar_dx[i1,:small],  yp2d[i1,:small], label='duu_bar_dx')
+plt.plot(duv_bar_dy[i1,:small],  yp2d[i1,:small], label='duv_bar_dy')
+plt.plot(nu*d2u_dx2[i1,:small], yp2d[i1,:small], label='nu*d2u_dx2')
+plt.plot(-duudx[i1,:small], yp2d[i1,:small], label='duu_dx')
+plt.plot(nu*d2u_dy2[i1,:small], yp2d[i1,:small], label='nu*d2u_dy2')
+plt.plot(-duvdy[i1,:small], yp2d[i1,:small], label='duv_dy')
+plt.legend()
+plt.savefig('R1_2_x1-mom_x1.png',dpi = 200)
+plt.title(r"Terms in x_1 mom eq, (x_1 dir)")
+plt.ylabel('y/H')
+
+
+fig5 = plt.figure() # Components in order as equaiton
+plt.plot(duv_bar_dx[i1,:small],  yp2d[i1,:small], label='duv_bar_dx')
+plt.plot(dvv_bar_dy[i1,:small],  yp2d[i1,:small], label='dvv_bar_dy')
+plt.plot(nu*d2v_dy2[i1,:small], yp2d[i1,:small], label='nu*d2v_dy2')
+plt.plot(-duvdx[i1,:small], yp2d[i1,:small], label='duv_dx')
+plt.plot(nu*d2v_dy2[i1,:small], yp2d[i1,:small], label='nu*d2v_dy2')
+plt.plot(-dvvdy[i1,:small], yp2d[i1,:small], label='dvv_dy')
+plt.legend()
+plt.savefig('R1_2_x1-mom_x2.png',dpi = 200)
+plt.title(r"Terms in x_1 mom eq, (x_2 dir)")
+plt.ylabel('y/H')
+
+fig5 = plt.figure() # Components in order as equaiton
+plt.plot(-dpdx[i1,:small], yp2d[i1,:small], label='dpdx')
+plt.plot(-dpdy[i1,:small], yp2d[i1,:small], label='dpdy')
+
+
+
+
 
 
 # fig1 = plt.figure()
@@ -332,11 +381,11 @@ omega2d=eps2d/k2d/0.09
 # plt.plot(duvdy[i1,:], yp2d[i1,:], label='duv_dy')
 
 # ax2 = plt.axes([.65, .6, .2, .2], axisbg='y')
-# plt.plot(dpdx[i1,0:0.2], yp2d[i1,0:0.2], label='dpdx')
-# plt.plot(nu*d2u_dx2[i1,0:0.2], yp2d[i1,0:0.2], label='nu*d2u_dx2')
-# plt.plot(duudx[i1,0:0.2], yp2d[i1,0:0.2], label='duu_dx')
-# plt.plot(nu*d2u_dy2[i1,0:0.2], yp2d[i1,0:0.2], label='nu*d2u_dy2')
-# plt.plot(duvdy[i1,0:0.2], yp2d[i1,0:0.2], label='duv_dy')
+# plt.plot(dpdx[i1,:100], yp2d[i1,:100], label='dpdx')
+# plt.plot(nu*d2u_dx2[i1,:100], yp2d[i1,:100], label='nu*d2u_dx2')
+# plt.plot(duudx[i1,:100], yp2d[i1,:100], label='duu_dx')
+# plt.plot(nu*d2u_dy2[i1,:100], yp2d[i1,:100], label='nu*d2u_dy2')
+# plt.plot(duvdy[i1,:100], yp2d[i1,:100], label='duv_dy')
 # plt.setp(ax2, xticks=[], yticks=[])
 # plt.show
 
