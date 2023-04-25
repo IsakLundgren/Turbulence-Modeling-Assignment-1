@@ -163,5 +163,5 @@ ax.contourf(dudy_mesh,vist_mesh,cmu_predict)
 dump(model, "nut-model-svr.bin")
 dump(scaler_dudy, "nut-scalar-dudy-svr.bin")
 dump(scaler_vist, "nut-scalar-vist-svr.bin")
-np.savetxt("vist-svr.txt", [min(dudy_DNS), max(dudy_DNS), min(vist_DNS), max(vist_DNS)])
+np.savetxt("vist-svr.txt", [min(dudy_all_data), max(dudy_all_data), min(vist_all_data), max(vist_all_data)])
 

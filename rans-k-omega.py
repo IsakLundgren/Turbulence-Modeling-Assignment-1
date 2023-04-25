@@ -23,7 +23,7 @@ plt.close('all')
 # http://www.tfd.chalmers.se/~lada/comp_fluid_dynamics/
 
 # max number of iterations
-niter=5000
+niter=25000
 
 plt.rcParams.update({'font.size': 22})
 
@@ -31,7 +31,7 @@ plt.rcParams.update({'font.size': 22})
 #TODO inserting the machine learned cmu
 from joblib import load
 
-VistModel = False
+VistModel = True
 
 folder = "./"
 
@@ -56,11 +56,11 @@ SVR = True
 
 # create the grid
 
-nj=30 # coarse grid
-#nj=98 # fine grid
+#nj=30 # coarse grid
+nj=98 # fine grid
 njm1=nj-1
-yfac=1.6 # coarse grid
-#yfac=1.15 # fine grid
+#yfac=1.6 # coarse grid
+yfac=1.15 # fine grid
 dy=0.1
 yc=np.zeros(nj)
 delta_y=np.zeros(nj)
@@ -225,9 +225,12 @@ for n in range(1,niter):
             minimum = vist_min * np.ones(nj)
             vist_clamped[:,0] = np.maximum(np.minimum(vist,maximum),minimum)
             model_input = np.zeros((nj,2))
-            model_input[:,0] = dudy_clamped[:,0]
-            model_input[:,1] = vist_clamped[:,0]
-            C_mu = model.predict(model_input)
+            dudy_transformed = scaler_dudy.transform(dudy_clamped)
+            vist_transformed = scaler_dudy.transform(vist_clamped)
+            model_input[:,0] = dudy_transformed[:,0]
+            model_input[:,1] = vist_transformed[:,0]
+            absuv = model.predict(model_input)
+            C_mu = np.divide(absuv,np.multiply(dudy_clamped[:,0],vist_clamped[:,0]))
       else:
             dudy_clamped = np.zeros((nj,1))
             maximum = dudy_max * np.ones(nj)
