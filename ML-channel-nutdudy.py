@@ -50,30 +50,27 @@ omega_DNS=(eps_DNS/0.09/vist_DNS)**0.5
 
 
 # turbulence model: uv = -cmu*k/omega*dudy => cmu=-uv/(k*dudy)*omega
-# Input data: dudy
-# output, to be predicted: cmu. interpolate to k-omega grid
-cmu_DNS=-uv_DNS/(k_DNS*dudy_DNS)*omega_DNS
-# fix cmu at the wall
-cmu_DNS[0]=1
-cmu_all_data=cmu_DNS
+# Input data: dudy, vist
+# output, to be predicted: uv. interpolate to k-omega grid
+uv_all_data = np.abs(uv_DNS)
 
-# input dudy
+# input dudy, vist
 dudy_all_data=dudy_DNS
-uv_all_data = uv_DNS
+vist_all_data = vist_DNS
 
-#TODO here the higher values of the stress are chosen for the turbulent boundary layer
 # choose values for 30 < y+ < 1000
 index_choose=np.nonzero((yplus_DNS > 30 )  & (yplus_DNS< 1000 ))
 yplus_DNS=yplus_DNS[index_choose]
 dudy_all_data= dudy_all_data[index_choose]
-cmu_all_data= cmu_all_data[index_choose]
+vist_all_data = vist_all_data[index_choose]
+uv_all_data = uv_all_data[index_choose]
 #  ....... do this for all varibles
 
 # create indices for all data
-index= np.arange(0,len(cmu_all_data), dtype=int)
+index= np.arange(0,len(uv_all_data), dtype=int)
 
 # number of elements of test data, 20%
-n_test=int(0.2*len(cmu_all_data))
+n_test=int(0.2*len(uv_all_data))
 
 # pick 20% elements randomly (test data)
 index_test=np.random.choice(index, size=n_test, replace=False)
@@ -81,25 +78,31 @@ index_test=np.random.choice(index, size=n_test, replace=False)
 #index_test=index[::5]
 
 dudy_test=dudy_all_data[index_test]
-cmu_out_test=cmu_all_data[index_test]
-n_test=len(dudy_test)
+vist_test=vist_all_data[index_test]
+uv_out_test=uv_all_data[index_test]
+n_test=len(dudy_test) #TODO this might be length(dudy_test)*len(vist_test)
 
 # delete testing data from 'all data' => training data
 dudy_in=np.delete(dudy_all_data,index_test)
-cmu_out=np.delete(cmu_all_data,index_test)
-n_svr=len(cmu_out)
+vist_in=np.delete(vist_all_data,index_test)
+uv_out=np.delete(uv_all_data,index_test)
+n_svr=len(uv_out)
 
 # re-shape
 dudy_in=dudy_in.reshape(-1, 1)
+vist_in=vist_in.reshape(-1, 1)
 
 # scale input data 
 scaler_dudy=StandardScaler()
+scaler_vist=StandardScaler()
 dudy_in=scaler_dudy.fit_transform(dudy_in)
+vist_in=scaler_vist.fit_transform(vist_in)
 
 # setup X (input) and y (output)
-X=np.zeros((n_svr,1))
-y=cmu_out
+X=np.zeros((n_svr,2))
+y=uv_out
 X[:,0]=dudy_in[:,0]
+X[:,1]=vist_in[:,0]
 
 print('starting SVR')
 
@@ -116,56 +119,50 @@ svr = model.fit(X, y.flatten())
 
 #  re-shape test data
 dudy_test=dudy_test.reshape(-1, 1)
+vist_test=vist_test.reshape(-1, 1)
 
 # scale test data
 dudy_test=scaler_dudy.transform(dudy_test)
+vist_test=scaler_vist.transform(vist_test)
 
 # setup X (input) for testing (predicting)
-X_test=np.zeros((n_test,1))
+X_test=np.zeros((n_test,2))
 X_test[:,0]=dudy_test[:,0]
+X_test[:,1]=vist_test[:,0]
 
 # predict cmu
-cmu_predict= model.predict(X_test)
+uv_predict= model.predict(X_test)
 
 # find difference between ML prediction and target
-cmu_error=np.std(cmu_predict-cmu_out_test)/\
-(np.mean(cmu_predict**2))**0.5
-print('\nRMS error using ML turbulence model',cmu_error)
+uv_error=np.std(uv_predict-uv_out_test)/\
+(np.mean(uv_predict**2))**0.5
+print('\nRMS error using ML turbulence model',uv_error)
 
-################### 2D scatter top view plot all points, both test and y_svr
-fig1,ax1 = plt.subplots()
-plt.subplots_adjust(left=0.20,bottom=0.20)
-ax=plt.gca()
+#Convert to C_mu using bousinesq approximation
+dudy_test=scaler_dudy.inverse_transform(dudy_test)
+vist_test=scaler_vist.inverse_transform(vist_test)
+cmu_predict = np.divide(uv_predict,np.multiply(dudy_test,vist_test))
+cmu_out_test = np.divide(uv_out_test,np.multiply(dudy_test,vist_test))
 
-# plot all points
-plt.scatter(scaler_dudy.inverse_transform(dudy_test), cmu_out_test,marker='o', s=20.2,c='green',label='target')
-#plt.scatter(scaler_dudy.inverse_transform(dudy_test), cmu_predict,marker='o', s=20.2,c='blue',label='predicted')
+# plot predicted vs true values
+fig, ax = plt.subplots(figsize=(10,10))
+ax.scatter(uv_out_test, uv_predict)
+ax.plot(ax.get_xlim(), ax.get_ylim(), ls="--", c=".3")
+ax.set_xlabel('True Values')
+ax.set_ylabel('Predicted Values')
+ax.set_title('SVR Model Performance')
+plt.show(block=True)
 
-#label axes
-ax.set_ylabel(r'$C_\mu$')
-plt.xlabel('$\partial U^+/\partial y$')
-plt.axis([0,2500,0,1.1])
-plt.legend(loc="upper left",prop=dict(size=12))
+#Plot C_mu to dudy and vist
+fig, ax = plt.subplots(figsize=(10,10))
 
-axins1 = inset_axes(ax1, width="50%", height="50%", loc='upper right', borderpad=0.1)
-# reduce fotnsize 
-axins1.tick_params(axis = 'both', which = 'major', labelsize = 10)
-plt.scatter(scaler_dudy.inverse_transform(dudy_test), cmu_out_test,marker='o', s=20.2,c='green')
-plt.scatter(scaler_dudy.inverse_transform(dudy_test), cmu_predict,marker='o', s=20.2,c='blue')
-axins1.yaxis.set_label_position("left")
-axins1.yaxis.tick_left()
-axins1.xaxis.set_label_position("bottom")
-axins1.xaxis.tick_bottom()
-plt.ylabel("$C_\mu$")
-plt.xlabel("$\partial U^+/\partial y$")
-plt.axis([0, 100, 0.4,1])
+dudy_mesh, vist_mesh = np.meshgrid(dudy_test, vist_test)
 
-
-plt.savefig('scatter-cmu-vs-dudy-svr-and-test.png',bbox_inches='tight')
-
+ax.contourf(dudy_mesh,vist_mesh,cmu_predict)
 
 #TODO save the model to export it to the CFD code
-dump(model, "model-svr.bin")
-dump(scaler_dudy, "scalar-dudy-svr.bin") 
-np.savetxt("dudy-svr.txt", [min(dudy_DNS), max(dudy_DNS)])
+dump(model, "nut-model-svr.bin")
+dump(scaler_dudy, "nut-scalar-dudy-svr.bin")
+dump(scaler_vist, "nut-scalar-vist-svr.bin")
+np.savetxt("vist-svr.txt", [min(dudy_all_data), max(dudy_all_data), min(vist_all_data), max(vist_all_data)])
 

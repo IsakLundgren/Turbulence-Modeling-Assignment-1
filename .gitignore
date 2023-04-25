@@ -1,5 +1,7 @@
 #Ignore all png files
 *.png
-*.bin
 *.txt
+*.bin
 __pycache__
+model-svr.bin
+scalar-dudy-svr.bin

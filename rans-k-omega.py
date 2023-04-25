@@ -1,6 +1,7 @@
 import scipy.io as sio
 import numpy as np
 import sys
+from sklearn.preprocessing import StandardScaler
 import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 #from tdma import tdma
@@ -30,11 +31,22 @@ plt.rcParams.update({'font.size': 22})
 #TODO inserting the machine learned cmu
 from joblib import load
 
+VistModel = True
+
 folder = "./"
-filename = str(folder) + "model-svr.bin"
-model = load(str(folder)+"model-svr.bin")
-scaler_dudy = load(str(folder)+"scalar-dudy-svr.bin")
-dudy_min, dudy_max = np.loadtxt(str(folder)+"dudy-svr.txt")
+
+if VistModel:
+      filename = str(folder) + "model-svr.bin"
+      model = load(str(folder)+"nut-model-svr.bin")
+      scaler_dudy = load(str(folder)+"nut-scalar-dudy-svr.bin")
+      scaler_vist = load(str(folder)+"nut-scalar-vist-svr.bin")
+      dudy_min, dudy_max, vist_min, vist_max = np.loadtxt(str(folder)+"vist-svr.txt")
+else:
+      filename = str(folder) + "model-svr.bin"
+      model = load(str(folder)+"model-svr.bin")
+      scaler_dudy = load(str(folder)+"scalar-dudy-svr.bin")
+      dudy_min, dudy_max = np.loadtxt(str(folder)+"dudy-svr.txt")
+
 SVR = True
 
 
@@ -44,8 +56,8 @@ SVR = True
 
 # create the grid
 
-nj=30 # coarse grid
-#nj=98 # fine grid
+#nj=30 # coarse grid
+nj=98 # fine grid
 njm1=nj-1
 #yfac=1.6 # coarse grid
 yfac=1.15 # fine grid
@@ -203,11 +215,31 @@ for n in range(1,niter):
     dudy2=dudy**2
 # Calculate new C_mu WARNING decoupled
     if(SVR):
-      dudy_clamped = np.zeros((nj,1))
-      maximum = dudy_max * np.ones(nj)
-      minimum = dudy_min * np.ones(nj)
-      dudy_clamped[:,0] = np.maximum(np.minimum(dudy,maximum),minimum)
-      C_mu = model.predict(dudy_clamped)
+      if(VistModel):
+            dudy_clamped = np.zeros((nj,1))
+            maximum = dudy_max * np.ones(nj)
+            minimum = dudy_min * np.ones(nj)
+            #Since model is only trained on positive test data, take absolute value of dudy. 
+            #Since C_mu positive both in positive and negative dudy, this should make sense
+            dudy_clamped[:,0] = np.maximum(np.minimum(np.abs(dudy),maximum),minimum) 
+            vist_clamped = np.zeros((nj,1))
+            maximum = vist_max * np.ones(nj)
+            minimum = vist_min * np.ones(nj)
+            vist_clamped[:,0] = np.maximum(np.minimum(vist,maximum),minimum)
+            model_input = np.zeros((nj,2))
+            dudy_transformed = scaler_dudy.transform(dudy_clamped)
+            vist_transformed = scaler_dudy.transform(vist_clamped)
+            model_input[:,0] = dudy_transformed[:,0]
+            model_input[:,1] = vist_transformed[:,0]
+            absuv = model.predict(model_input)
+            C_mu = np.divide(absuv,np.multiply(dudy_clamped[:,0],vist_clamped[:,0]))
+      else:
+            dudy_clamped = np.zeros((nj,1))
+            maximum = dudy_max * np.ones(nj)
+            minimum = dudy_min * np.ones(nj)
+            dudy_clamped[:,0] = np.maximum(np.minimum(dudy,maximum),minimum)
+            C_mu = model.predict(scaler_dudy.transform(dudy_clamped))
+         
     for j in range(1,nj-1):
 
 
