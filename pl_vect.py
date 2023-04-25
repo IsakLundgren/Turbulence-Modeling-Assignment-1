@@ -1,10 +1,17 @@
+"""
+Header
+"""
+
 import scipy.io as sio
 import numpy as np
 import sys
 import matplotlib.pyplot as plt
+import os
 #import gradients.py
 from gradients import compute_face_phi,dphidx,dphidy,init
 plt.rcParams.update({'font.size': 22})
+import matplotlib.ticker as mtick
+from matplotlib import ticker
 
 plt.interactive(True)
 
@@ -84,9 +91,9 @@ vist_RANS=k_eps_RANS[:,2]
 
 ntstep=k_RANS[0]
 
-k_RANS2d=np.reshape(k_RANS,(nj,ni))/ntstep
-eps_RANS2d=np.reshape(eps_RANS,(nj,ni))/ntstep
-vist_RANS2d=np.reshape(vist_RANS,(nj,ni))/ntstep
+k_RANS2d=np.reshape(k_RANS,(ni,nj))/ntstep
+eps_RANS2d=np.reshape(eps_RANS,(ni,nj))/ntstep
+vist_RANS2d=np.reshape(vist_RANS,(ni,nj))/ntstep
 
 # x and y are fo the cell centers. The dphidx_dy routine needs the face coordinate, xf2d, yf2d
 # load them
@@ -174,6 +181,8 @@ UU2d_face_w,UU2d_face_s=compute_face_phi(u2d**2,fx,fy,ni,nj)
 VV2d_face_w,VV2d_face_s=compute_face_phi(v2d**2,fx,fy,ni,nj)
 UV2d_face_w,UV2d_face_s=compute_face_phi(np.multiply(u2d,v2d),fx,fy,ni,nj)
 p2d_face_w,p2d_face_s=compute_face_phi(p2d,fx,fy,ni,nj)
+uu2d_face_w,uu2d_face_s=compute_face_phi(uu2d,fx,fy,ni,nj)
+uv2d_face_w,uv2d_face_s=compute_face_phi(uv2d,fx,fy,ni,nj)
 uv2d_face_w,uv2d_face_s=compute_face_phi(uv2d,fx,fy,ni,nj) # reynolds components
 uu2d_face_w,uu2d_face_s=compute_face_phi(uu2d,fx,fy,ni,nj) # Turbulent kinetic energy x
 vv2d_face_w,vv2d_face_s=compute_face_phi(vv2d,fx,fy,ni,nj) # Turbulent kinetic energy y
@@ -182,6 +191,8 @@ vv2d_face_w,vv2d_face_s=compute_face_phi(vv2d,fx,fy,ni,nj) # Turbulent kinetic e
 dudx=dphidx(u2d_face_w,u2d_face_s,areawx,areasx,vol)
 dvdx=dphidx(v2d_face_w,v2d_face_s,areawx,areasx,vol)
 dpdx=dphidx(p2d_face_w,p2d_face_s,areawx,areasx,vol)
+duudx=dphidx(uu2d_face_w,uu2d_face_s,areawx,areasx,vol)
+duvdx=dphidx(uv2d_face_w,uv2d_face_s,areawx,areasx,vol)
 dUUdx=dphidx(UU2d_face_w,UU2d_face_s,areawx,areasx,vol)
 dUVdx=dphidx(UV2d_face_w,UV2d_face_s,areawx,areasx,vol)
 duvdx = dphidx(uv2d_face_w,uv2d_face_s,areawx,areasx,vol) # reynolds stressesx-dir
@@ -299,7 +310,7 @@ omega2d=eps2d/k2d/0.09
 
 #Station plotting
 
-i_close = 3 #Index close to the inlet
+i_close = 3 #Index close to the inlet (Might be too close)
 i_circ = 30 #Index in circulating region
 
 x_close = x[i_close]
@@ -392,3 +403,275 @@ plt.savefig('Pk_term_keq_turbulent.png')
 
 
 
+i = plotloopivals[plotIteration]
+
+#TODO clean plots
+fig2 = plt.figure()
+plt.subplots_adjust(left=0.20,top=0.80,bottom=0.20)
+i=10
+plt.plot(dUUdx[i,:],yp2d[i,:], label='First convection term')
+plt.plot(dUVdy[i,:],yp2d[i,:], label='Second convection term')
+plt.plot(-dpdx[i,:],yp2d[i,:], label='Pressure gradient term')
+plt.plot(nu*dudxdx[i,:],yp2d[i,:], label='First viscous diffusion term')
+plt.plot(nu*dudydy[i,:],yp2d[i,:], label='Second viscous diffusion term')
+plt.plot(-duudx[i,:],yp2d[i,:], label='First turbulent diffusion term')
+plt.plot(-duvdy[i,:],yp2d[i,:], label='Second turbulent diffusion term (Reynolds stress gradient)')
+plt.title('x-momentum, x = ' + str(x_close))
+plt.xlabel('$\overline{u^\prime v^\prime}$')
+plt.ylabel('y/H')
+#plt.legend()
+plt.savefig('x-momentumClose.png')
+
+fig2 = plt.figure()
+plt.subplots_adjust(left=0.20,top=0.80,bottom=0.20)
+i=10
+plt.plot(dUVdx[i,:],yp2d[i,:], label='First convection term')
+plt.plot(dVVdy[i,:],yp2d[i,:], label='Second convection term')
+plt.plot(-dpdy[i,:],yp2d[i,:], label='Pressure gradient term')
+plt.plot(nu*dvdxdx[i,:],yp2d[i,:], label='First viscous diffusion term')
+plt.plot(nu*dvdydy[i,:],yp2d[i,:], label='Second viscous diffusion term')
+plt.plot(-duvdx[i,:],yp2d[i,:], label='First turbulent diffusion term')
+plt.plot(-dvvdy[i,:],yp2d[i,:], label='Second turbulent diffusion term (Reynolds stress gradient)')
+plt.title('x-momentum, x = ' + str(x_close))
+plt.xlabel('$\overline{u^\prime v^\prime}$')
+plt.ylabel('y/H')
+#plt.legend()
+plt.savefig('x-momentumClose.png')
+
+#Q1.4.5
+
+#Choosing stress 11 and 12
+#Setup turbulent viscosity
+C_mu = 0.009
+C_1 = 1.5
+C_2 = 0.6
+C_1w = 0.5
+C_2w = 0.3
+sigma_k = 1
+
+nu_t = C_mu * np.divide(np.multiply(k_RANS2d,k_RANS2d),eps_RANS2d)
+
+#Compute face values
+Uuu_w,Uuu_s=compute_face_phi(np.multiply(u2d,uu2d),fx,fy,ni,nj)
+Vuu_w,Vuu_s=compute_face_phi(np.multiply(v2d,uu2d),fx,fy,ni,nj)
+Uuv_w,Uuv_s=compute_face_phi(np.multiply(u2d,uv2d),fx,fy,ni,nj)
+Vuv_w,Vuv_s=compute_face_phi(np.multiply(v2d,uv2d),fx,fy,ni,nj)
+
+#Compute first derivatives
+  # x
+dUuudx = dphidx(Uuu_w,Uuu_s,areawx,areasx,vol)
+dUuvdx = dphidx(Uuv_w,Uuv_s,areawx,areasx,vol)
+
+  # y
+dVuudy = dphidy(Vuu_w,Vuu_s,areawy,areasy,vol)
+dVuvdy = dphidy(Vuv_w,Vuv_s,areawy,areasy,vol)
+duudy = dphidy(uu2d_face_w,uu2d_face_s,areawy,areasy,vol)
+
+#Compute derivative face values
+duudx_w,duudx_s = compute_face_phi(duudx,fx,fy,ni,nj)
+duvdx_w,duvdx_s = compute_face_phi(duvdx,fx,fy,ni,nj)
+duudy_w,duudy_s = compute_face_phi(duudy,fx,fy,ni,nj)
+duvdy_w,duvdy_s = compute_face_phi(duvdy,fx,fy,ni,nj)
+nu_t_w,nu_t_s = compute_face_phi(nu_t,fx,fy,ni,nj)
+
+#Compute second derivatives
+  #x
+duudxdx = dphidx(duudx_w,duudx_s,areawx,areasx,vol)
+duvdxdx = dphidx(duvdx_w,duvdx_s,areawx,areasx,vol)
+dnu_tduudxdx = dphidx(np.multiply(nu_t_w,duudx_w),np.multiply(nu_t_s,duudx_s),areawx,areasx,vol)
+dnu_tduvdxdx = dphidx(np.multiply(nu_t_w,duvdx_w),np.multiply(nu_t_s,duvdx_s),areawx,areasx,vol)
+
+  #y
+duudydy = dphidy(duudy_w,duudy_s,areawy,areasy,vol)
+duvdydy = dphidy(duvdy_w,duvdy_s,areawy,areasy,vol)
+dnu_tduudydy = dphidy(np.multiply(nu_t_w,duudy_w),np.multiply(nu_t_s,duudy_s),areawy,areasy,vol)
+dnu_tduvdydy = dphidy(np.multiply(nu_t_w,duvdy_w),np.multiply(nu_t_s,duvdy_s),areawy,areasy,vol)
+
+#Convective term
+ConvectiveReynolds11 = dUuudx + dVuudy
+ConvectiveReynolds12 = dUuvdx + dVuvdy
+
+#Viscous diffusion term
+ViscousReynolds11 = nu * (duudxdx + duudydy)
+ViscousReynolds12 = nu * (duvdxdx + duvdydy)
+
+#Produciton term
+ProductionReynolds11 = - 2 * (np.multiply(uu2d,dudx) + np.multiply(uv2d,dudy))
+ProductionReynolds12 = - (np.multiply(uu2d,dvdx) + np.multiply(uv2d,dvdy)) - (np.multiply(uv2d,dudx) + np.multiply(vv2d,dudy))
+
+#Pressure-strain term
+#Preperatory terms
+ProductionTKE = -(np.multiply(uu2d,dudx) + np.multiply(uv2d,dudy) + np.multiply(uv2d,dvdx) + np.multiply(vv2d,dvdy)) #Turbulent Kinetic Energy
+
+calcWallDist = False
+
+if calcWallDist:
+    Walldistance = np.zeros((ni,nj))
+    for i in range(ni):
+        for j in range(nj):
+            Distances = np.zeros((ni,2))
+            for k in range(ni):
+                Distances[k,0] = np.sqrt((x2d[i,j]-x2d[k,1])**2 + (y2d[i,j]-y2d[k,1])**2)
+                Distances[k,1] = np.sqrt((x2d[i,j]-x2d[k,nj-1])**2 + (y2d[i,j]-y2d[k,nj-1])**2)
+            Walldistance[i,j] = np.min(Distances)
+    
+    # Write Walldistance vector to file
+    np.savetxt("Walldistance.dat", Walldistance)
+else:
+    if os.path.isfile("Walldistance.dat"):
+        # Read Walldistance vector from file
+        Walldistance = np.loadtxt("Walldistance.dat")
+    else:
+        print("Error: Walldistance file not found.")
+
+dampingFunction = np.zeros((ni,nj))
+for i in range(ni):
+   for j in range(nj):
+      dampingFunction[i,j] = min(k_RANS2d[i,j]**(3/2)/(2.55*Walldistance[i,j]*eps_RANS2d[i,j]),1)
+
+SPR11 = - C_1 * np.multiply(np.divide(eps_RANS2d,k_RANS2d),(uu2d - 2/3 * k_RANS2d))
+RPR11 = - C_2 * (ProductionReynolds11 - 2/3 * ProductionTKE)
+SPR12 = - C_1 * np.multiply(np.divide(eps_RANS2d,k_RANS2d),uv2d)
+RPR12 = - C_2 * ProductionReynolds12
+
+SPWR11 = C_1w * np.multiply(np.divide(eps_RANS2d,k_RANS2d),vv2d,dampingFunction)
+RPWR11 = C_2w * np.multiply(RPR11,dampingFunction)
+SPWR12 = - 3/2 * C_1w * np.multiply(np.divide(eps_RANS2d,k_RANS2d),uv2d,dampingFunction)
+RPWR12 = - 3/2 * C_1w * np.multiply(RPR12,dampingFunction)
+
+PressureStrainReynolds11 = SPR11 + RPR11 + SPWR11 + RPWR11
+PressureStrainReynolds12 = SPR12 + RPR12 + SPWR12 + RPWR12
+
+#Turbulent diffusion term
+TurbulentReynolds11 = 1/sigma_k * (dnu_tduudxdx + dnu_tduudydy)
+TurbulentReynolds12 = 1/sigma_k * (dnu_tduvdxdx + dnu_tduvdydy)
+
+#Destruction term
+DestructionReynolds11 = -2/3 * eps_RANS2d
+DestructionReynolds12 = -np.zeros((ni,nj))
+
+fig2 = plt.figure()
+plt.subplots_adjust(left=0.20,top=0.80,bottom=0.20)
+i=i_close
+plt.plot(ConvectiveReynolds11[i,:],yp2d[i,:],label='Convective')
+plt.plot(ViscousReynolds11[i,:],yp2d[i,:],label='Viscous diffusion')
+plt.plot(ProductionReynolds11[i,:],yp2d[i,:],label='Production')
+plt.plot(PressureStrainReynolds11[i,:],yp2d[i,:],label='Pressure strain')
+plt.plot(TurbulentReynolds11[i,:],yp2d[i,:],label='Turbulent diffusion')
+plt.plot(DestructionReynolds11[i,:],yp2d[i,:],label='Destruction')
+
+plt.title('Reynolds 11 equation terms at x = ' + str(x_close), fontsize = 20)
+plt.xlabel('Equation term magnitude $[m^2s^{-3}]$', fontsize = 20)
+plt.ylabel('$y/H$', fontsize = 20)
+plt.legend(prop={'size': 12})
+plt.savefig('Reynolds11.png')
+
+fig2 = plt.figure()
+plt.subplots_adjust(left=0.20,top=0.80,bottom=0.20)
+i=i_close
+plt.plot(ConvectiveReynolds12[i,:],yp2d[i,:],label='Convective term')
+plt.plot(ViscousReynolds12[i,:],yp2d[i,:],label='Viscous diffusion term')
+plt.plot(ProductionReynolds12[i,:],yp2d[i,:],label='Production term')
+plt.plot(PressureStrainReynolds12[i,:],yp2d[i,:],label='Pressure strain term')
+plt.plot(TurbulentReynolds12[i,:],yp2d[i,:],label='Turbulent diffusion term')
+plt.plot(DestructionReynolds12[i,:],yp2d[i,:],label='Destruction term')
+
+plt.title('Reynolds 12 equation terms at x = ' + str(x_close), fontsize = 20)
+plt.xlabel('Equation term magnitude $[m^2s^{-3}]$', fontsize = 20)
+plt.ylabel('$y/H$', fontsize = 20)
+plt.legend(prop={'size': 12})
+plt.savefig('Reynolds12.png')
+
+#Q1.4.6
+
+#B for Boussinesq
+
+uuB = -np.multiply(nu_t,(dudx + dudx)) + 2/3 * k_RANS2d
+uvB = -np.multiply(nu_t,(dudy + dvdx))
+vuB = uvB
+vvB = -np.multiply(nu_t,(dvdy + dvdy)) + 2/3 * k_RANS2d
+
+NormDiff11 = 2 * np.divide(np.abs(uu2d-uuB), np.abs(uu2d+uuB))
+NormDiff12 = 2 * np.divide(np.abs(uv2d-uvB), np.abs(uv2d+uvB)) 
+
+fig2 = plt.figure()
+plt.subplots_adjust(left=0.20,top=0.80,bottom=0.20)
+plt.pcolormesh(xp2d,yp2d,NormDiff11)
+plt.colorbar()
+plt.xlabel("$x$")
+plt.ylabel("$y$")
+plt.title(r"Normalized difference 11 term")
+plt.savefig('BoussinesqComp11.png')
+
+fig2 = plt.figure()
+plt.subplots_adjust(left=0.20,top=0.80,bottom=0.20)
+plt.pcolormesh(xp2d,yp2d,NormDiff12)
+plt.colorbar()
+plt.xlabel("$x$")
+plt.ylabel("$y$")
+plt.title(r"Normalized difference 12 term")
+plt.savefig('BoussinesqComp12.png')
+
+
+#Q1.4.7
+
+FindNegativesPTKE = np.sign(ProductionTKE)
+
+################################ Pressure gradient x-dir
+fig2 = plt.figure()
+plt.subplots_adjust(left=0.20,top=0.80,bottom=0.20)
+plt.pcolormesh(xp2d,yp2d,FindNegativesPTKE)
+plt.colorbar()
+plt.xlabel("$x$")
+plt.ylabel("$y$")
+plt.title(r"Sign function of the exact TKE production term")
+plt.savefig('PTKENeg.png')
+
+#Q1.4.8
+
+#Calculate Eigenvalues in each cell
+
+s11 = dudx
+s12 = 1/2 * (dudy + dvdx)
+s21 = s12
+s22 = dvdx
+
+SEig= np.zeros(shape = (ni,nj,2))
+nu_tReduction = np.zeros([ni,nj])
+
+for i in range(ni):
+   for j in range(nj):
+      SEig[i,j,:] = np.linalg.eigvals([[s11[i,j],s12[i,j]],[s21[i,j],s22[i,j]]])
+      nu_tReduction[i,j] = nu_t[i,j] > k_RANS2d[i,j] / (3 * np.abs(np.max(SEig[i,j,:])))
+
+fig2 = plt.figure()
+plt.subplots_adjust(left=0.20,top=0.80,bottom=0.20)
+plt.pcolormesh(xp2d,yp2d,SEig[:,:,0])
+plt.colorbar()
+plt.xlabel("$x$")
+plt.ylabel("$y$")
+plt.title(r"First eigenvalue of the strain tensor")
+plt.savefig('SEig1.png')
+
+fig2 = plt.figure()
+plt.subplots_adjust(left=0.20,top=0.80,bottom=0.20)
+plt.pcolormesh(xp2d,yp2d,SEig[:,:,1])
+plt.colorbar()
+plt.xlabel("$x$")
+plt.ylabel("$y$")
+plt.title(r"Second eigenvalue of the strain tensor")
+plt.savefig('SEig2.png')
+
+fig2 = plt.figure()
+plt.subplots_adjust(left=0.20,top=0.80,bottom=0.20)
+plt.pcolormesh(xp2d,yp2d,nu_tReduction)
+plt.axvline(x=x_close, linestyle='--', color='r')
+plt.axvline(x=x_circ, linestyle='--', color='r')
+plt.colorbar()
+plt.xlabel("$x$")
+plt.ylabel("$y$")
+plt.title(r"Areas where reduction occurrs")
+plt.savefig('nut_reduction.png')
+
+plt.show(block=True)
+#TODO No areas with reduction
