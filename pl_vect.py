@@ -333,39 +333,71 @@ d2u_dy2 = dphidx(dudy2d_face_w, dudy2d_face_s, areawy, areasy, vol)
 d2v_dy2 = dphidx(dvdy2d_face_w, dvdy2d_face_s, areawy, areasy, vol)
 
 # Plots of the component in the v_bar_1 equation
-small = 150
+small = 100
 large = 100
 i1 = 1
+
+# fig4=plt.figure()
+# plt.plot(duu_bar_dx[i1,:small],  yp2d[i1,:small], label='duu_bar_dx')
+# plt.plot(duv_bar_dy[i1,:small],  yp2d[i1,:small], label='duv_bar_dy')
+# plt.plot(-dpdx[i1,:small], yp2d[i1,:small], label='dpdx')
+# plt.plot(nu*d2u_dx2[i1,:small], yp2d[i1,:small], label='nu*d2u_dx2')
+# plt.plot(-duudx[i1,:small], yp2d[i1,:small], label='duu_dx')
+# plt.plot(nu*d2u_dy2[i1,:small], yp2d[i1,:small], label='nu*d2u_dy2')
+# plt.plot(-duvdy[i1,:small], yp2d[i1,:small], label='duv_dy')
+# plt.legend(prop={'size': 12})
+# plt.title(r"Terms in x_1 mom eq, (x_1 dir)", fontsize=20)
+# plt.ylabel('y/H', fontsize=20)
+# plt.axis([-0.3, 0.3, 0, 0.075])
+# plt.grid()
+# plt.savefig('R1_2_x1-mom_x1.png', dpi=300)
+
+# fig5 = plt.figure() # Components in order as equaiton
+# plt.plot(duv_bar_dx[i1,:small],  yp2d[i1,:small], label='duv_bar_dx')
+# plt.plot(dvv_bar_dy[i1,:small],  yp2d[i1,:small], label='dvv_bar_dy')
+# plt.plot(-dpdy[i1,:small], yp2d[i1,:small], label='dpdy')
+# plt.plot(nu*d2v_dy2[i1,:small], yp2d[i1,:small], label='nu*d2v_dy2')
+# plt.plot(-duvdx[i1,:small], yp2d[i1,:small], label='duv_dx')
+# plt.plot(nu*d2v_dy2[i1,:small], yp2d[i1,:small], label='nu*d2v_dy2')
+# plt.plot(-dvvdy[i1,:small], yp2d[i1,:small], label='dvv_dy')
+# plt.legend(prop={'size': 12})
+# plt.axis([-0.2, 0.2, 0, 0.1])
+# plt.title(r"Terms in x_1 mom eq, (x_2 dir)", fontsize=20)
+# plt.ylabel('y/H', fontsize=20)
+# plt.grid()
+# plt.savefig('R1_2_x1-mom_x2.png', dpi=300)
+
+i1 = 20
 
 fig4=plt.figure()
 plt.plot(duu_bar_dx[i1,:small],  yp2d[i1,:small], label='duu_bar_dx')
 plt.plot(duv_bar_dy[i1,:small],  yp2d[i1,:small], label='duv_bar_dy')
+plt.plot(-dpdx[i1,:small], yp2d[i1,:small], label='dpdx')
 plt.plot(nu*d2u_dx2[i1,:small], yp2d[i1,:small], label='nu*d2u_dx2')
 plt.plot(-duudx[i1,:small], yp2d[i1,:small], label='duu_dx')
 plt.plot(nu*d2u_dy2[i1,:small], yp2d[i1,:small], label='nu*d2u_dy2')
 plt.plot(-duvdy[i1,:small], yp2d[i1,:small], label='duv_dy')
-plt.legend()
-plt.savefig('R1_2_x1-mom_x1.png',dpi = 200)
-plt.title(r"Terms in x_1 mom eq, (x_1 dir)")
-plt.ylabel('y/H')
-
+plt.legend(prop={'size': 12})
+plt.title(r"Terms in x_1 mom eq, (x_1 dir)", fontsize=20)
+plt.ylabel('y/H', fontsize=20)
+plt.axis([-0.8, 0.3, -0.05, 0.12])
+plt.grid()
+plt.savefig('R1_2_x1-mom_x1_circ.png', dpi=300)
 
 fig5 = plt.figure() # Components in order as equaiton
 plt.plot(duv_bar_dx[i1,:small],  yp2d[i1,:small], label='duv_bar_dx')
 plt.plot(dvv_bar_dy[i1,:small],  yp2d[i1,:small], label='dvv_bar_dy')
+plt.plot(-dpdy[i1,:small], yp2d[i1,:small], label='dpdy')
 plt.plot(nu*d2v_dy2[i1,:small], yp2d[i1,:small], label='nu*d2v_dy2')
 plt.plot(-duvdx[i1,:small], yp2d[i1,:small], label='duv_dx')
 plt.plot(nu*d2v_dy2[i1,:small], yp2d[i1,:small], label='nu*d2v_dy2')
 plt.plot(-dvvdy[i1,:small], yp2d[i1,:small], label='dvv_dy')
-plt.legend()
-plt.savefig('R1_2_x1-mom_x2.png',dpi = 200)
-plt.title(r"Terms in x_1 mom eq, (x_2 dir)")
-plt.ylabel('y/H')
-
-fig5 = plt.figure() # Components in order as equaiton
-plt.plot(-dpdx[i1,:small], yp2d[i1,:small], label='dpdx')
-plt.plot(-dpdy[i1,:small], yp2d[i1,:small], label='dpdy')
-
+plt.legend(prop={'size': 12})
+plt.axis([-0.25, 0.2, -0.05, 0.12])
+plt.title(r"Terms in x_1 mom eq, (x_2 dir)", fontsize=20)
+plt.ylabel('y/H', fontsize=20)
+plt.grid()
+plt.savefig('R1_2_x1-mom_x2_circ.png', dpi=300)
 
 
 
